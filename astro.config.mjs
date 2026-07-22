@@ -84,7 +84,7 @@ export default defineConfig({
 	],
 
 	site: siteConfig.siteURL,
-	base: "/",
+	base: "/astro-blog",
 	trailingSlash: "always",
 	compressHTML: true,
 
