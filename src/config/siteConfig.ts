@@ -1,4 +1,4 @@
-import type { SiteConfig } from "../types/config";
+﻿import type { SiteConfig } from "../types/config";
 
 // 定义站点语言
 const SITE_LANG = "en"; // 语言代码，例如：'en', 'zh_CN', 'ja' 等。

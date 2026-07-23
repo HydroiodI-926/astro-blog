@@ -1,5 +1,6 @@
----
+﻿---
 import { siteConfig } from "../../config";
+import { url } from "../../utils/url-utils";
 import type { FullscreenWallpaperConfig } from "../../types/config";
 
 interface Props {
@@ -20,7 +21,7 @@ const getImageSources = async () => {
 			const text = await response.text();
 			const apiImages = text.split("\n").filter((line) => line.trim());
 			if (apiImages.length > 0) {
-				return { desktop: apiImages, mobile: apiImages };
+				return { desktop: apiImages.map(url), mobile: apiImages.map(url) };
 			}
 		} catch (error) {
 			console.warn("Failed to fetch images from API:", error);
@@ -35,8 +36,8 @@ const getImageSources = async () => {
 		srcConfig !== null &&
 		!Array.isArray(srcConfig)
 	) {
-		const desktop = toArray(srcConfig.desktop);
-		const mobile = toArray(srcConfig.mobile);
+		const desktop = toArray(srcConfig.desktop).map(url);
+		const mobile = toArray(srcConfig.mobile).map(url);
 		return {
 			desktop: desktop.length > 0 ? desktop : mobile,
 			mobile: mobile.length > 0 ? mobile : desktop,
@@ -44,7 +45,7 @@ const getImageSources = async () => {
 	}
 
 	// 如果是字符串或字符串数组，同时用于桌面端和移动端
-	const allImages = toArray(srcConfig as string | string[]);
+	const allImages = toArray(srcConfig as string | string[]).map(url);
 	return { desktop: allImages, mobile: allImages };
 };
 
