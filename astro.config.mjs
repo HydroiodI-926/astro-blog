@@ -1,4 +1,4 @@
-import sitemap from "@astrojs/sitemap";
+﻿import sitemap from "@astrojs/sitemap";
 import mdx from '@astrojs/mdx';
 import { unified } from '@astrojs/markdown-remark';
 import svelte, { vitePreprocess } from "@astrojs/svelte";
@@ -84,7 +84,7 @@ export default defineConfig({
 	],
 
 	site: siteConfig.siteURL,
-	base: "/astro-blog",
+	base: "/",
 	trailingSlash: "always",
 	compressHTML: true,
 
@@ -108,18 +108,18 @@ export default defineConfig({
 			theme: false,
 			animationClass: "transition-swup-",
 			containers: ["main"],
-			smoothScrolling: false, // 禁用平滑滚动以提升性能，避免与锚点导航冲突
+			smoothScrolling: false, // 绂佺敤骞虫粦婊氬姩浠ユ彁鍗囨€ц兘锛岄伩鍏嶄笌閿氱偣瀵艰埅鍐茬獊
 			cache: true,
-			preload: false, // 禁用预加载以提升性能
+			preload: false, // 绂佺敤棰勫姞杞戒互鎻愬崌鎬ц兘
 			accessibility: true,
 			updateHead: process.env.NODE_ENV === "production",
 			updateBodyClass: false,
 			globalInstance: true,
-			// 滚动相关配置优化
+			// 婊氬姩鐩稿叧閰嶇疆浼樺寲
 			resolveUrl: (url) => url,
 			animateHistoryBrowsing: false,
 			skipPopStateHandling: (event) => {
-				// 跳过锚点链接的处理，让浏览器原生处理
+				// 璺宠繃閿氱偣閾炬帴鐨勫鐞嗭紝璁╂祻瑙堝櫒鍘熺敓澶勭悊
 				return (
 					event.state &&
 					event.state.url &&
@@ -246,8 +246,7 @@ export default defineConfig({
 	},
 	vite: {
 		plugins: [tailwindcss()],
-		// 开发环境预打包优化：将常用依赖提前编译，避免首次页面加载时 on-demand 编译导致 8s+ 的等待
-		optimizeDeps: {
+		// 寮€鍙戠幆澧冮鎵撳寘浼樺寲锛氬皢甯哥敤渚濊禆鎻愬墠缂栬瘧锛岄伩鍏嶉娆￠〉闈㈠姞杞芥椂 on-demand 缂栬瘧瀵艰嚧 8s+ 鐨勭瓑寰?		optimizeDeps: {
 			include: [
 				"@iconify/svelte",
 				"svelte",
@@ -260,7 +259,7 @@ export default defineConfig({
 				"qrcode",
 			],
 		},
-		// 预热常用入口文件，让 Vite 在服务器启动后立即开始转换，而不是等到浏览器请求
+		// 棰勭儹甯哥敤鍏ュ彛鏂囦欢锛岃 Vite 鍦ㄦ湇鍔″櫒鍚姩鍚庣珛鍗冲紑濮嬭浆鎹紝鑰屼笉鏄瓑鍒版祻瑙堝櫒璇锋眰
 		server: {
 			warmup: {
 				clientFiles: [
@@ -275,14 +274,13 @@ export default defineConfig({
 			},
 		},
 		build: {
-			// 静态资源处理优化，防止小图片转 base64 导致 HTML 体积过大
+			// 闈欐€佽祫婧愬鐞嗕紭鍖栵紝闃叉灏忓浘鐗囪浆 base64 瀵艰嚧 HTML 浣撶Н杩囧ぇ
 			assetsInlineLimit: 4096,
-			// CSS 代码分割
+			// CSS 浠ｇ爜鍒嗗壊
 			cssCodeSplit: true,
 			cssMinify: "esbuild",
-			// 内联小型 CSS 文件以减少网络请求
-			inlineStylesheets: "auto",
-			// 生产环境移除 console 和 debugger
+			// 鍐呰仈灏忓瀷 CSS 鏂囦欢浠ュ噺灏戠綉缁滆姹?			inlineStylesheets: "auto",
+			// 鐢熶骇鐜绉婚櫎 console 鍜?debugger
 			minify: "esbuild",
 			rollupOptions: {
 				onwarn(warning, warn) {
@@ -300,7 +298,7 @@ export default defineConfig({
 				},
 			},
 		},
-		// 生产环境移除 console.log 和 debugger
+		// 鐢熶骇鐜绉婚櫎 console.log 鍜?debugger
 		esbuildOptions: {
 			drop:
 				process.env.NODE_ENV === "production"
