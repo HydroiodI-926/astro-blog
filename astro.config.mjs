@@ -1,4 +1,4 @@
-﻿import sitemap from "@astrojs/sitemap";
+import sitemap from "@astrojs/sitemap";
 import mdx from '@astrojs/mdx';
 import { unified } from '@astrojs/markdown-remark';
 import svelte, { vitePreprocess } from "@astrojs/svelte";
@@ -246,7 +246,8 @@ export default defineConfig({
 	},
 	vite: {
 		plugins: [tailwindcss()],
-		// 寮€鍙戠幆澧冮鎵撳寘浼樺寲锛氬皢甯哥敤渚濊禆鎻愬墠缂栬瘧锛岄伩鍏嶉娆￠〉闈㈠姞杞芥椂 on-demand 缂栬瘧瀵艰嚧 8s+ 鐨勭瓑寰?		optimizeDeps: {
+		// 开发环境预打包优化
+				optimizeDeps: {
 			include: [
 				"@iconify/svelte",
 				"svelte",
@@ -279,7 +280,8 @@ export default defineConfig({
 			// CSS 浠ｇ爜鍒嗗壊
 			cssCodeSplit: true,
 			cssMinify: "esbuild",
-			// 鍐呰仈灏忓瀷 CSS 鏂囦欢浠ュ噺灏戠綉缁滆姹?			inlineStylesheets: "auto",
+			// 内联小型 CSS 文件以减少网络请求
+						inlineStylesheets: "auto",
 			// 鐢熶骇鐜绉婚櫎 console 鍜?debugger
 			minify: "esbuild",
 			rollupOptions: {
