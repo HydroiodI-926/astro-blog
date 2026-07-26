@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "posts/数据结构 并查集.md",
+                "file": "posts/ack 2026 暑假第一次集训.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "数据结构 并查集"
+              "title": "ack 2026 暑假第一次集训"
             }
           }
         ]
@@ -185,8 +185,9 @@
   },
   "active": "4e2e370d2b4f3eb8",
   "lastOpenFiles": [
+    "posts/数据结构 并查集.md",
+    "posts/ack 2026 暑假第一次集训.md",
     "posts/guide/index.md",
-    "posts/guide/cover.webp",
-    "posts/数据结构 并查集.md"
+    "posts/guide/cover.webp"
   ]
 }
