@@ -14,8 +14,8 @@
               "type": "markdown",
               "state": {
                 "file": "posts/ack 2026 暑假第一次集训.md",
-                "mode": "source",
-                "source": false
+                "mode": "preview",
+                "source": true
               },
               "icon": "lucide-file",
               "title": "ack 2026 暑假第一次集训"
@@ -186,8 +186,8 @@
   "active": "4e2e370d2b4f3eb8",
   "lastOpenFiles": [
     "posts/数据结构 并查集.md",
-    "posts/ack 2026 暑假第一次集训.md",
     "posts/guide/index.md",
+    "posts/ack 2026 暑假第一次集训.md",
     "posts/guide/cover.webp"
   ]
 }
