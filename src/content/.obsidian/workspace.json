@@ -74,8 +74,7 @@
               "title": "书签"
             }
           }
-        ],
-        "currentTab": 1
+        ]
       }
     ],
     "direction": "horizontal",
@@ -184,6 +183,10 @@
       "bases:新建数据库": false
     }
   },
-  "active": "2a4cbcc5acf16d07",
-  "lastOpenFiles": []
+  "active": "4e2e370d2b4f3eb8",
+  "lastOpenFiles": [
+    "posts/guide/index.md",
+    "posts/guide/cover.webp",
+    "posts/数据结构 并查集.md"
+  ]
 }
