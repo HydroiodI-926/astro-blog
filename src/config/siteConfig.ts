@@ -157,6 +157,7 @@ export const siteConfig: SiteConfig = {
 			subtitle: [
 				"我的临时小站",
 				"你好呀~",
+				"花径不曾缘客扫，蓬门今始为君开",
 			],
 			typewriter: {
 				enable: true, // 启用副标题打字机效果
