@@ -139,21 +139,39 @@ export const navBarConfig: NavBarConfig = {
 			url: "/links/",
 			icon: "material-symbols:link",
 			children: [
+				// {
+				// 	name: "GitHub",
+				// 	url: "https://github.com/LyraVoid/Mizuki",
+				// 	external: true, // 外部链接，新标签页打开
+				// 	icon: "fa7-brands:github",
+				// },
+				// {
+				// 	name: "Bilibili",
+				// 	url: "https://space.bilibili.com/701864046",
+				// 	external: true,
+				// 	icon: "fa7-brands:bilibili",
+				// },
+				// {
+				// 	name: "Gitee",
+				// 	url: "https://gitee.com/matsuzakayuki/Mizuki",
+				// 	external: true,
+				// 	icon: "mdi:git",
+				// },
 				{
 					name: "GitHub",
-					url: "https://github.com/LyraVoid/Mizuki",
+					url: "https://github.com/HydroiodI-926",
 					external: true, // 外部链接，新标签页打开
 					icon: "fa7-brands:github",
 				},
 				{
 					name: "Bilibili",
-					url: "https://space.bilibili.com/701864046",
+					url: "https://space.bilibili.com/453418403",
 					external: true,
 					icon: "fa7-brands:bilibili",
 				},
 				{
-					name: "Gitee",
-					url: "https://gitee.com/matsuzakayuki/Mizuki",
+					name: "CSDN",
+					url: "https://blog.csdn.net/2401_88753321?type=blog",
 					external: true,
 					icon: "mdi:git",
 				},
