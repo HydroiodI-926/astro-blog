@@ -197,6 +197,29 @@ int findMaxForm(vector<string>& strs, int m, int n) {
 	return dp[m][n];
 }
 ```
+### [879. 盈利计划](https://leetcode.cn/problems/profitable-schemes/)
+记忆化搜索解
+```cpp
+int dp[105][105][105];
+int mod = 1e9+7;
+int profitableSchemes(int n, int m, vector<int>& g, vector<int>& p) {
+	int l=g.size();
+	memset(dp,-1,sizeof(dp));
+	auto mems = [&](auto&& self,int i,int j,int k)->int{
+		if(j<=0) return k<=0?1:0;
+		if(i==l) return k<=0?1:0;
+		if(dp[i][j][k]!=-1) return dp[i][j][k];
+		if(j>=g[i]){
+			dp[i][j][k]=(self(self,i+1,j,k)+self(self,i+1,j-g[i],max(0,k-p[i])))%mod;	
+		}
+		else{
+			dp[i][j][k]=self(self,i+1,j,k)%mod;
+		}
+		return dp[i][j][k]%mod;
+	};
+	return mems(mems,0,n,m);
+}
+```
 # 完全背包
 ## [B2174 完全背包 - 洛谷](https://www.luogu.com.cn/problem/B2174)
 ## [P1616 疯狂的采药 - 洛谷](https://www.luogu.com.cn/problem/P1616)
