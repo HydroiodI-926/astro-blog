@@ -1,0 +1,533 @@
+---
+import { Icon } from "astro-icon/components";
+
+import { getSortedPostsList, getTagList } from "../../../utils/content-utils";
+import { getTagUrl, url } from "../../../utils/url-utils";
+import WidgetLayout from "../common/WidgetLayout.astro";
+
+interface Props {
+	class?: string;
+	style?: string;
+}
+
+interface BrowserPost {
+	id: string;
+	title: string;
+	url: string;
+	published: Date;
+}
+
+interface DayGroup {
+	day: number;
+	posts: BrowserPost[];
+}
+
+interface MonthGroup {
+	month: number;
+	postCount: number;
+	days: DayGroup[];
+}
+
+interface YearGroup {
+	year: number;
+	postCount: number;
+	months: MonthGroup[];
+}
+
+const { class: className, style } = Astro.props;
+const instanceId = `post-browser-${Math.random().toString(36).slice(2, 9)}`;
+const MAX_POSTS_PER_LIST = 10;
+
+const posts: BrowserPost[] = (await getSortedPostsList())
+	.map((post) => ({
+		id: post.id,
+		title: post.data.title,
+		url: post.url ?? `/posts/${post.id}/`,
+		published: post.data.published,
+	}))
+	.sort((a, b) => b.published.getTime() - a.published.getTime());
+
+const yearsMap = new Map<number, Map<number, Map<number, BrowserPost[]>>>();
+
+for (const post of posts) {
+	const year = post.published.getFullYear();
+	const month = post.published.getMonth() + 1;
+	const day = post.published.getDate();
+	const months = yearsMap.get(year) ?? new Map();
+	const days = months.get(month) ?? new Map();
+	const dayPosts = days.get(day) ?? [];
+
+	dayPosts.push(post);
+	days.set(day, dayPosts);
+	months.set(month, days);
+	yearsMap.set(year, months);
+}
+
+const years: YearGroup[] = [...yearsMap.entries()]
+	.sort(([yearA], [yearB]) => yearB - yearA)
+	.map(([year, monthsMap]) => {
+		const months: MonthGroup[] = [...monthsMap.entries()]
+			.sort(([monthA], [monthB]) => monthB - monthA)
+			.map(([month, daysMap]) => {
+				const days: DayGroup[] = [...daysMap.entries()]
+					.sort(([dayA], [dayB]) => dayB - dayA)
+					.map(([day, dayPosts]) => ({ day, posts: dayPosts }));
+
+				return {
+					month,
+					postCount: days.reduce((count, day) => count + day.posts.length, 0),
+					days,
+				};
+			});
+
+		return {
+			year,
+			postCount: months.reduce((count, month) => count + month.postCount, 0),
+			months,
+		};
+	});
+
+const tags = await getTagList();
+---
+
+<WidgetLayout name="文章浏览" id={instanceId} class={className} style={style}>
+	<post-browser class="block" data-post-browser>
+		<div class="post-browser-tabs" role="tablist" aria-label="文章浏览维度">
+			<button
+				type="button"
+				class="post-browser-tab"
+				role="tab"
+				aria-selected="true"
+				data-browser-tab="time"
+			>
+				<Icon name="material-symbols:calendar-month-outline-rounded" />
+				<span>时间</span>
+			</button>
+			<button
+				type="button"
+				class="post-browser-tab"
+				role="tab"
+				aria-selected="false"
+				data-browser-tab="tags"
+			>
+				<Icon name="material-symbols:label-outline-rounded" />
+				<span>标签</span>
+			</button>
+		</div>
+
+		<section class="post-browser-panel" role="tabpanel" data-browser-panel="time">
+			<p class="post-browser-hint">按年月日展开，单个日期最多显示 10 篇</p>
+			<div class="time-tree custom-scrollbar">
+				{
+					years.map((yearGroup, yearIndex) => (
+						<details class="tree-node tree-year" open={yearIndex === 0}>
+							<summary>
+								<span class="tree-caret"><Icon name="material-symbols:chevron-right-rounded" /></span>
+								<span class="tree-label">{yearGroup.year} 年</span>
+								<span class="tree-count">{yearGroup.postCount}</span>
+								<a
+									href={url(`/archive/?year=${yearGroup.year}`)}
+									class="tree-filter-link"
+									data-tree-filter
+									aria-label={`筛选 ${yearGroup.year} 年的文章`}
+									title={`筛选 ${yearGroup.year} 年的文章`}
+								>
+									<Icon name="material-symbols:open-in-new" />
+								</a>
+							</summary>
+							<div class="tree-children">
+								{yearGroup.months.map((monthGroup, monthIndex) => (
+									<details class="tree-node tree-month" open={yearIndex === 0 && monthIndex === 0}>
+										<summary>
+											<span class="tree-caret"><Icon name="material-symbols:chevron-right-rounded" /></span>
+											<span class="tree-label">{monthGroup.month} 月</span>
+											<span class="tree-count">{monthGroup.postCount}</span>
+											<a
+												href={url(`/archive/?year=${yearGroup.year}&month=${monthGroup.month}`)}
+												class="tree-filter-link"
+												data-tree-filter
+												aria-label={`筛选 ${yearGroup.year} 年 ${monthGroup.month} 月的文章`}
+												title={`筛选 ${yearGroup.year} 年 ${monthGroup.month} 月的文章`}
+											>
+												<Icon name="material-symbols:open-in-new" />
+											</a>
+										</summary>
+										<div class="tree-children">
+											{monthGroup.days.map((dayGroup, dayIndex) => (
+												<details class="tree-node tree-day" open={yearIndex === 0 && monthIndex === 0 && dayIndex === 0}>
+													<summary>
+														<span class="tree-caret"><Icon name="material-symbols:chevron-right-rounded" /></span>
+														<span class="tree-label">{dayGroup.day} 日</span>
+														<span class="tree-count">{dayGroup.posts.length}</span>
+														<a
+															href={url(`/archive/?year=${yearGroup.year}&month=${monthGroup.month}&day=${dayGroup.day}`)}
+															class="tree-filter-link"
+															data-tree-filter
+															aria-label={`筛选 ${yearGroup.year} 年 ${monthGroup.month} 月 ${dayGroup.day} 日的文章`}
+															title={`筛选 ${yearGroup.year} 年 ${monthGroup.month} 月 ${dayGroup.day} 日的文章`}
+														>
+															<Icon name="material-symbols:open-in-new" />
+														</a>
+													</summary>
+													<div class="post-links">
+														{dayGroup.posts.slice(0, MAX_POSTS_PER_LIST).map((post) => (
+															<a href={post.url} class="post-link" title={post.title}>
+																<span class="post-dot" aria-hidden="true" />
+																<span>{post.title}</span>
+															</a>
+														))}
+														{dayGroup.posts.length > MAX_POSTS_PER_LIST && (
+															<a
+																href={url(`/archive/?year=${yearGroup.year}&month=${monthGroup.month}&day=${dayGroup.day}`)}
+																class="view-all-link"
+															>
+																查看当日全部 {dayGroup.posts.length} 篇
+															</a>
+														)}
+													</div>
+												</details>
+											))}
+										</div>
+									</details>
+								))}
+							</div>
+						</details>
+					))
+				}
+			</div>
+		</section>
+
+		<section
+			class="post-browser-panel"
+			role="tabpanel"
+			hidden
+			data-browser-panel="tags"
+		>
+			<p class="post-browser-hint">选择标签，查看具有相同标签的文章</p>
+			<div class="tag-list custom-scrollbar">
+				{
+					tags.map((tag) => (
+						<a
+							href={getTagUrl(tag.name)}
+							class="tag-link"
+							aria-label={`查看标签“${tag.name.trim()}”下的 ${tag.count} 篇文章`}
+						>
+							<span class="tag-name">#{tag.name.trim()}</span>
+							<span class="tag-count">{tag.count}</span>
+						</a>
+					))
+				}
+			</div>
+		</section>
+	</post-browser>
+</WidgetLayout>
+
+<style>
+	.post-browser-tabs {
+		display: grid;
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+		gap: 0.375rem;
+		padding: 0.25rem;
+		border-radius: 0.75rem;
+		background: var(--btn-regular-bg);
+	}
+
+	.post-browser-tab {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		gap: 0.375rem;
+		min-height: 2.25rem;
+		border-radius: 0.625rem;
+		font-size: 0.875rem;
+		font-weight: 700;
+		color: rgb(115 115 115);
+		cursor: pointer;
+		transition: color 150ms ease, background-color 150ms ease, box-shadow 150ms ease;
+	}
+
+	.post-browser-tab :global(svg) {
+		font-size: 1.125rem;
+	}
+
+	.post-browser-tab[aria-selected="true"] {
+		color: var(--primary);
+		background: var(--card-bg);
+		box-shadow: 0 1px 4px rgb(0 0 0 / 8%);
+	}
+
+	:global(.dark) .post-browser-tab {
+		color: rgb(163 163 163);
+	}
+
+	:global(.dark) .post-browser-tab[aria-selected="true"] {
+		color: var(--primary);
+	}
+
+	.post-browser-panel {
+		margin-top: 0.75rem;
+	}
+
+	.post-browser-panel[hidden] {
+		display: none;
+	}
+
+	.post-browser-hint {
+		margin: 0 0 0.5rem;
+		font-size: 0.75rem;
+		line-height: 1.25rem;
+		color: rgb(115 115 115);
+	}
+
+	:global(.dark) .post-browser-hint {
+		color: rgb(163 163 163);
+	}
+
+	.time-tree,
+	.tag-list {
+		max-height: 28rem;
+		overflow-y: auto;
+		padding-right: 0.125rem;
+		scrollbar-width: thin;
+		scrollbar-color: rgb(156 163 175 / 55%) transparent;
+	}
+
+	.tree-node summary {
+		display: flex;
+		align-items: center;
+		min-height: 2.125rem;
+		padding: 0.25rem 0.375rem;
+		border-radius: 0.5rem;
+		color: rgb(64 64 64);
+		font-size: 0.875rem;
+		font-weight: 700;
+		cursor: pointer;
+		list-style: none;
+		user-select: none;
+	}
+
+	.tree-node summary::-webkit-details-marker {
+		display: none;
+	}
+
+	.tree-node summary:hover,
+	.tree-node summary:focus-visible {
+		color: var(--primary);
+		background: var(--btn-plain-bg-hover);
+		outline: none;
+	}
+
+	:global(.dark) .tree-node summary {
+		color: rgb(212 212 212);
+	}
+
+	.tree-caret {
+		display: inline-flex;
+		flex: 0 0 auto;
+		font-size: 1.125rem;
+		transition: transform 150ms ease;
+	}
+
+	.tree-node[open] > summary > .tree-caret {
+		transform: rotate(90deg);
+	}
+
+	.tree-label {
+		min-width: 0;
+		flex: 1;
+	}
+
+	.tree-count,
+	.tag-count {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		min-width: 1.5rem;
+		height: 1.25rem;
+		padding: 0 0.375rem;
+		border-radius: 999px;
+		font-size: 0.6875rem;
+		font-weight: 700;
+		color: var(--primary);
+		background: color-mix(in oklch, var(--primary) 12%, transparent);
+	}
+
+	.tree-filter-link {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		width: 1.75rem;
+		height: 1.75rem;
+		flex: 0 0 auto;
+		margin-left: 0.125rem;
+		border-radius: 0.5rem;
+		color: rgb(115 115 115);
+		font-size: 1rem;
+		text-decoration: none;
+	}
+
+	.tree-filter-link:hover,
+	.tree-filter-link:focus-visible {
+		color: var(--primary);
+		background: color-mix(in oklch, var(--primary) 12%, transparent);
+		outline: none;
+	}
+
+	:global(.dark) .tree-filter-link {
+		color: rgb(163 163 163);
+	}
+
+	.tree-children {
+		margin-left: 0.625rem;
+		padding-left: 0.5rem;
+		border-left: 1px solid var(--line-divider);
+	}
+
+	.post-links {
+		display: flex;
+		flex-direction: column;
+		gap: 0.125rem;
+		padding: 0.125rem 0 0.375rem 0.625rem;
+	}
+
+	.post-link,
+	.view-all-link {
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
+		min-height: 2rem;
+		padding: 0.25rem 0.5rem;
+		border-radius: 0.5rem;
+		font-size: 0.8125rem;
+		color: rgb(82 82 82);
+		text-decoration: none;
+	}
+
+	.post-link:hover,
+	.post-link:focus-visible,
+	.view-all-link:hover,
+	.view-all-link:focus-visible {
+		color: var(--primary);
+		background: var(--btn-plain-bg-hover);
+		outline: none;
+	}
+
+	.post-link > span:last-child {
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+	}
+
+	.post-dot {
+		width: 0.375rem;
+		height: 0.375rem;
+		flex: 0 0 auto;
+		border-radius: 999px;
+		background: color-mix(in oklch, var(--primary) 55%, transparent);
+	}
+
+	.view-all-link {
+		justify-content: center;
+		color: var(--primary);
+		font-weight: 700;
+	}
+
+	:global(.dark) .post-link {
+		color: rgb(212 212 212);
+	}
+
+	.tag-list {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.5rem;
+	}
+
+	.tag-link {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.375rem;
+		max-width: 100%;
+		min-height: 2rem;
+		padding: 0.375rem 0.625rem;
+		border: 1px solid var(--line-divider);
+		border-radius: 0.625rem;
+		color: rgb(82 82 82);
+		font-size: 0.75rem;
+		font-weight: 700;
+		text-decoration: none;
+		transition: color 150ms ease, border-color 150ms ease, background-color 150ms ease;
+	}
+
+	.tag-link:hover,
+	.tag-link:focus-visible {
+		color: var(--primary);
+		border-color: color-mix(in oklch, var(--primary) 45%, transparent);
+		background: var(--btn-plain-bg-hover);
+		outline: none;
+	}
+
+	.tag-name {
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+	}
+
+	:global(.dark) .tag-link {
+		color: rgb(212 212 212);
+	}
+
+	.custom-scrollbar::-webkit-scrollbar {
+		width: 4px;
+	}
+
+	.custom-scrollbar::-webkit-scrollbar-track {
+		background: transparent;
+	}
+
+	.custom-scrollbar::-webkit-scrollbar-thumb {
+		border-radius: 2px;
+		background: rgb(156 163 175 / 55%);
+	}
+</style>
+
+<script>
+	class PostBrowserElement extends HTMLElement {
+		connectedCallback() {
+			if (this.dataset.ready === "true") {
+				return;
+			}
+
+			this.dataset.ready = "true";
+			const tabs = this.querySelectorAll<HTMLButtonElement>("[data-browser-tab]");
+			const panels = this.querySelectorAll<HTMLElement>("[data-browser-panel]");
+			const treeFilterLinks = this.querySelectorAll<HTMLAnchorElement>(
+				"[data-tree-filter]",
+			);
+
+			for (const link of treeFilterLinks) {
+				link.addEventListener("click", (event) => event.stopPropagation());
+			}
+
+			for (const tab of tabs) {
+				tab.addEventListener("click", () => {
+					const target = tab.dataset.browserTab;
+
+					for (const item of tabs) {
+						item.setAttribute(
+							"aria-selected",
+							String(item.dataset.browserTab === target),
+						);
+					}
+
+					for (const panel of panels) {
+						panel.hidden = panel.dataset.browserPanel !== target;
+					}
+				});
+			}
+		}
+	}
+
+	if (!customElements.get("post-browser")) {
+		customElements.define("post-browser", PostBrowserElement);
+	}
+</script>

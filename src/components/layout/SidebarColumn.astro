@@ -12,6 +12,7 @@ import { CardTOC } from "../widgets/card-toc";
 import Categories from "../widgets/categories/Categories.astro";
 import MusicPlayer from "../widgets/music-player/MusicPlayer.svelte";
 import { MusicSidebarWidget } from "../widgets/music-sidebar";
+import PostBrowser from "../widgets/post-browser/PostBrowser.astro";
 import Profile from "../widgets/profile/Profile.astro";
 import SiteStats from "../widgets/site-stats/SiteStats.astro";
 import Tags from "../widgets/tags/Tags.astro";
@@ -47,6 +48,7 @@ const componentMap: Record<string, unknown> = {
 	announcement: Announcement,
 	categories: Categories,
 	tags: Tags,
+	"post-browser": PostBrowser,
 	toc: SidebarTOC,
 	"card-toc": CardTOC,
 	"music-player": MusicPlayer,

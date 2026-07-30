@@ -66,6 +66,13 @@ export const sidebarLayoutConfig: SidebarLayoutConfig = {
 			},
 		},
 		{
+			// 文章浏览组件：按时间树或标签浏览文章
+			type: "post-browser",
+			position: "top",
+			class: "onload-animation",
+			animationDelay: 250,
+		},
+		{
 			// 组件类型：卡片式目录组件
 			type: "card-toc",
 			// 组件位置
@@ -99,9 +106,15 @@ export const sidebarLayoutConfig: SidebarLayoutConfig = {
 
 	// 侧栏组件布局配置
 	components: {
-		left: ["profile", "announcement", "tags", "card-toc"],
+		left: ["profile", "announcement", "post-browser", "card-toc"],
 		right: ["site-stats", "calendar", "categories", "music-sidebar"],
-		drawer: ["profile", "announcement", "music-sidebar", "categories", "tags"],
+		drawer: [
+			"profile",
+			"announcement",
+			"post-browser",
+			"music-sidebar",
+			"categories",
+		],
 	},
 
 	// 默认动画配置

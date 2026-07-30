@@ -4,6 +4,8 @@
   "version": "9.0",
   "scripts": {
     "sync-content": "node scripts/sync-content.js",
+    "manifest": "node scripts/generate-content-manifest.mjs",
+    "test:manifest": "node --test tests/content-manifest.test.mjs",
     "init-content": "node scripts/init-content-repo.js",
     "predev": "node scripts/sync-content.js || true",
     "prebuild": "node scripts/sync-content.js || true",
@@ -43,6 +45,7 @@
     "astro-icon": "^1.1.5",
     "axios": "^1.18.1",
     "dayjs": "^1.11.21",
+    "github-slugger": "2.0.0",
     "hastscript": "^9.0.1",
     "katex": "^0.17.0",
     "l2d-widget": "^0.1.0",
@@ -70,7 +73,8 @@
     "svelte": "^5.56.4",
     "tailwindcss": "^4.3.2",
     "typescript": "^6.0.3",
-    "unist-util-visit": "^5.1.0"
+    "unist-util-visit": "^5.1.0",
+    "yaml": "2.9.0"
   },
   "devDependencies": {
     "@astrojs/ts-plugin": "^1.10.9",

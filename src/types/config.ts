@@ -358,6 +358,7 @@ export type WidgetComponentType =
 	| "announcement"
 	| "categories"
 	| "tags"
+	| "post-browser"
 	| "toc"
 	| "card-toc" // 卡片式目录组件
 	| "music-player"

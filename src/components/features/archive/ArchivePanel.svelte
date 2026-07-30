@@ -14,6 +14,9 @@ const params = new URLSearchParams(window.location.search);
 tags = params.has("tag") ? params.getAll("tag") : [];
 categories = params.has("category") ? params.getAll("category") : [];
 const uncategorized = params.get("uncategorized");
+const selectedYear = Number.parseInt(params.get("year") ?? "", 10);
+const selectedMonth = Number.parseInt(params.get("month") ?? "", 10);
+const selectedDay = Number.parseInt(params.get("day") ?? "", 10);
 
 let groups = $state<Group[]>([]);
 
@@ -46,6 +49,24 @@ onMount(async () => {
 
 	if (uncategorized) {
 		filteredPosts = filteredPosts.filter((post) => !post.data.category);
+	}
+
+	if (Number.isInteger(selectedYear)) {
+		filteredPosts = filteredPosts.filter(
+			(post) => post.data.published.getFullYear() === selectedYear,
+		);
+	}
+
+	if (Number.isInteger(selectedMonth)) {
+		filteredPosts = filteredPosts.filter(
+			(post) => post.data.published.getMonth() + 1 === selectedMonth,
+		);
+	}
+
+	if (Number.isInteger(selectedDay)) {
+		filteredPosts = filteredPosts.filter(
+			(post) => post.data.published.getDate() === selectedDay,
+		);
 	}
 
 	// 按发布时间倒序排序，确保不受置顶影响

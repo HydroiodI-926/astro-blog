@@ -260,7 +260,10 @@ Mizuki 支持超越标准 GitHub Flavored Markdown 的增强功能：
 | `pnpm format`            | 使用 Prettier 格式化代码               |
 | `pnpm lint`              | 检查并修复代码问题                     |
 | `pnpm new-post <文件名>` | 创建新博客文章                         |
+| `pnpm manifest`         | 生成本地文章内容清单                   |
 | `pnpm astro ...`         | 运行 Astro CLI 命令                    |
+
+生产构建会同时生成 `/content-manifest/index.json`、最近文章清单和按年份拆分的 JSON 接口，供其他静态博客拉取。字段说明和同步方式参见[内容清单接口文档](docs/CONTENT_MANIFEST.md)。
 
 ## 🎯 配置指南
 

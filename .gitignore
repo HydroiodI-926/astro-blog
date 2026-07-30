@@ -41,6 +41,7 @@ yarn.lock
 .claude
 
 cache/
+.tmp/content-manifest/
 fuwari/
 src/data/myself.ts
 src/pages/myself.astro

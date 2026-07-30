@@ -13,6 +13,7 @@ export const WIDGET_COMPONENT_MAP = {
 	announcement: "../components/widgets/announcement/Announcement.astro",
 	categories: "../components/widgets/categories/Categories.astro",
 	tags: "../components/widgets/tags/Tags.astro",
+	"post-browser": "../components/widgets/post-browser/PostBrowser.astro",
 	toc: "../components/widgets/toc/TOC.astro",
 	"card-toc": "../components/widgets/card-toc/CardTOC.astro",
 	"music-player": "../components/widgets/music-player/MusicPlayer.svelte",

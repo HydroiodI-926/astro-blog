@@ -8,6 +8,12 @@
   Access-Control-Allow-Methods: GET
   Access-Control-Max-Age: 86400
 
+/content-manifest/*
+  Access-Control-Allow-Origin: *
+  Access-Control-Allow-Methods: GET
+  Access-Control-Max-Age: 86400
+  Cache-Control: public, max-age=300, must-revalidate
+
 /*
   Cache-Control: public, max-age=3600, must-revalidate
 

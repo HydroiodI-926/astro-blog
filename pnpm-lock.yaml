@@ -65,6 +65,9 @@ importers:
       dayjs:
         specifier: ^1.11.21
         version: 1.11.21
+      github-slugger:
+        specifier: 2.0.0
+        version: 2.0.0
       hastscript:
         specifier: ^9.0.1
         version: 9.0.1
@@ -149,6 +152,9 @@ importers:
       unist-util-visit:
         specifier: ^5.1.0
         version: 5.1.0
+      yaml:
+        specifier: 2.9.0
+        version: 2.9.0
     devDependencies:
       '@astrojs/ts-plugin':
         specifier: ^1.10.9
