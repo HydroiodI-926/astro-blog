@@ -14,7 +14,66 @@ category: 算法笔记
 5. 矩阵路径模型
 6. 多维状态模型
 # 基础题型
-[P1216 数字三角形 Number Triangles - 洛谷](https://www.luogu.com.cn/problem/P1216)
+### [53. 最大子数组和](https://leetcode.cn/problems/maximum-subarray/)
+[P1115 最大子段和 - 洛谷](https://www.luogu.com.cn/problem/P1115)
+##### 提一个概念
+- 子序列 从原序列中删除若干个元素（也可以一个都不删）后，保持剩余元素的**相对先后顺序不变**所得到的序列。
+- 子数组 一般强调是连续的一段子序列
+#### 题解 优化了dp数组
+从贡献的角度来看对于以$nums[i]$结尾的数组就是要看前面一串的和是否为正数，是正数的话，那么对这个子串是有正贡献的，否则根据贪心，直接选择$nums[i]$作为新字串的头即可
+```cpp
+int maxSubArray(vector<int>& nums) {
+    int pre=nums[0],ans=nums[0];
+	for(int i=1;i<nums.size();i++){
+		if(pre>=0) pre+=nums[i];
+		else pre=nums[i];
+		ans=max(pre,ans);
+	}
+	return ans; 
+}
+```
+要更进一步的弄懂这个问题，可以顺便把最大子数组的范围求出来
+```cpp
+int left=0,right=0;
+int maxSubArray(vector<int>& nums) {
+    int pre=nums[0],ans=nums[0],l=0,r=0;
+	for(int i=1;i<nums.size();i++){
+		if(pre>=0){
+			pre+=nums[i];
+			r++;
+		}
+		else{
+			pre=nums[i];
+			r++;
+			l=r;
+		}
+		if(pre>ans){
+			ans=pre;
+			left=l;
+			right=r;
+		}
+	}
+	return ans; 
+}
+```
+### [198. 打家劫舍](https://leetcode.cn/problems/house-robber/)
+```cpp
+int rob(vector<int>& nums) {
+	int n=nums.size();
+	if(n==1) return nums[0];
+	if(n==2) return max(nums[0],nums[1]);
+	int pre=max(nums[0],nums[1]),ppre=nums[0];
+	for(int i=2,cur;i<n;i++){
+		cur=max({nums[i],pre,ppre+nums[i]});
+		ppre=pre;
+		pre=cur;
+	}
+	return pre;   
+}
+```
+
+
+### [P1216 数字三角形 Number Triangles - 洛谷](https://www.luogu.com.cn/problem/P1216)
 ### [B3637 最长上升子序列 - 洛谷](https://www.luogu.com.cn/problem/B3637)
 最基础的LIS问题
 ```cpp
@@ -88,7 +147,6 @@ void solve() {
 	cout<<b.size();
 }
 ```
-### [P1115 最大子段和 - 洛谷](https://www.luogu.com.cn/problem/P1115)
 ### [U651833 游戏4 - 洛谷](https://www.luogu.com.cn/problem/U651833)
 ### 最长公共子序列 LCS
 求两个字符串的最长公共子序列长度。
@@ -166,6 +224,41 @@ void solve() {
 	}
 }
 ```
+# 环状序列模型
+### [918. 环形子数组的最大和](https://leetcode.cn/problems/maximum-sum-circular-subarray/)
+逻辑上数组首尾相连，实际上，答案有两种情况，一种是连续不断的子数组，另一种是中间有一段中断的“两个子数组”，后者就是整个数组和-最小子数组的情况，跑两次比较大小即可
+当然，后者的这个算法有一个问题，就是如果整个数组都为正数或者都为负数，那么最大子数组=最小子数组=数组之和，那么这个算法算出来等于0，如果是都为负数的情况，题目要求子数组>=1那么就会出问题，需要特判
+```cpp
+int maxSubarraySumCircular(vector<int>& nums) {
+    int pre=nums[0],res=nums[0],ans=nums[0],n=nums.size(),sum=nums[0];
+	for(int i=1;i<n;i++){
+		sum+=nums[i];
+		if(pre>0){
+			pre+=nums[i];
+		}
+		else{
+			pre=nums[i];
+		}
+		ans=max(ans,pre);
+	}
+	pre=nums[0];
+	for(int i=1;i<n;i++){
+		if(pre<0){
+			pre+=nums[i];
+		}
+		else{
+			pre=nums[i];
+		}
+		res=min(res,pre);
+	} 
+	if(res==sum){
+		return ans;
+	}  
+	else{
+		return max(ans,sum-res);
+	}
+}
+```
 
 # 进阶dp的优化
 [P9242 [蓝桥杯 2023 省 B] 接龙数列 - 洛谷](https://www.luogu.com.cn/problem/P9242)
@@ -191,4 +284,5 @@ void solve() {
     cout<<n-ans; // 最后，要求的是最少修改量，因此总数减掉最长的情况即可
 }
 ```
+
 
