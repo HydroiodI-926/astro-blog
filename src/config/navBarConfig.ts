@@ -183,6 +183,11 @@ export const navBarConfig: NavBarConfig = {
 			icon: "material-symbols:person",
 			children: [
 				{
+					name: "English",
+					url: "/english/",
+					icon: "material-symbols:translate",
+				},
+				{
 					name: "Anime",
 					url: "/anime/",
 					icon: "material-symbols:movie",

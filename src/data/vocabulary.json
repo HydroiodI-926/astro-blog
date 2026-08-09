@@ -1,0 +1,1119 @@
+{
+  "schemaVersion": 2,
+  "meta": {
+    "title": "英语单词学习数据",
+    "updatedAt": "2026-08-08T10:13:53+00:00",
+    "batchCount": 1,
+    "entryCount": 109,
+    "sourceTruncatedCount": 14
+  },
+  "batches": [
+    {
+      "id": "20260808T094453Z-06e847df",
+      "title": "奶酪单词-中英词表(1)",
+      "sourceFile": "奶酪单词-中英词表(1).pdf",
+      "sourceHash": "06e847df17babb5903af91cc77e6d1fd2952af2874966cc65a31629078a3c7d4",
+      "uploadedAt": "2026-08-08T09:44:53+00:00",
+      "pageCount": 3,
+      "entryCount": 109,
+      "expectedPageCounts": [
+        40,
+        40,
+        29
+      ],
+      "sourceTruncatedCount": 14
+    }
+  ],
+  "entries": [
+    {
+      "id": "20260808T094453Z-06e847df:p1-01",
+      "batchId": "20260808T094453Z-06e847df",
+      "page": 1,
+      "number": 1,
+      "word": "proceeding",
+      "phonetic": "prəˈsiːdɪŋ",
+      "meaning": "n.进程；诉讼；一系列行动；记录vt.开始行动，开…",
+      "sourceTruncated": true
+    },
+    {
+      "id": "20260808T094453Z-06e847df:p1-02",
+      "batchId": "20260808T094453Z-06e847df",
+      "page": 1,
+      "number": 2,
+      "word": "proceed",
+      "phonetic": "prəˈsiːd",
+      "meaning": "vi.继续做；行进",
+      "sourceTruncated": false
+    },
+    {
+      "id": "20260808T094453Z-06e847df:p1-03",
+      "batchId": "20260808T094453Z-06e847df",
+      "page": 1,
+      "number": 3,
+      "word": "recession",
+      "phonetic": "rɪˈseʃn",
+      "meaning": "n.（经济）衰退（期）；退后；撤回",
+      "sourceTruncated": false
+    },
+    {
+      "id": "20260808T094453Z-06e847df:p1-04",
+      "batchId": "20260808T094453Z-06e847df",
+      "page": 1,
+      "number": 4,
+      "word": "recede",
+      "phonetic": "rɪˈsiːd",
+      "meaning": "vi.渐渐远离；减弱；(发际线) 后移",
+      "sourceTruncated": false
+    },
+    {
+      "id": "20260808T094453Z-06e847df:p1-05",
+      "batchId": "20260808T094453Z-06e847df",
+      "page": 1,
+      "number": 5,
+      "word": "excessive",
+      "phonetic": "ɪkˈsesɪv",
+      "meaning": "adj.过分的；过度的",
+      "sourceTruncated": false
+    },
+    {
+      "id": "20260808T094453Z-06e847df:p1-06",
+      "batchId": "20260808T094453Z-06e847df",
+      "page": 1,
+      "number": 6,
+      "word": "successive",
+      "phonetic": "səkˈsesɪv",
+      "meaning": "adj.连续的，相继的",
+      "sourceTruncated": false
+    },
+    {
+      "id": "20260808T094453Z-06e847df:p1-07",
+      "batchId": "20260808T094453Z-06e847df",
+      "page": 1,
+      "number": 7,
+      "word": "excess",
+      "phonetic": "ɪkˈses",
+      "meaning": "n.超过；过多；超过的量adj.超额的，过度的",
+      "sourceTruncated": false
+    },
+    {
+      "id": "20260808T094453Z-06e847df:p1-08",
+      "batchId": "20260808T094453Z-06e847df",
+      "page": 1,
+      "number": 8,
+      "word": "exceedingly",
+      "phonetic": "ɪkˈsiːdɪŋli",
+      "meaning": "adv.极其，非常",
+      "sourceTruncated": false
+    },
+    {
+      "id": "20260808T094453Z-06e847df:p1-09",
+      "batchId": "20260808T094453Z-06e847df",
+      "page": 1,
+      "number": 9,
+      "word": "exceed",
+      "phonetic": "ɪkˈsiːd",
+      "meaning": "vt.超过；超出",
+      "sourceTruncated": false
+    },
+    {
+      "id": "20260808T094453Z-06e847df:p1-10",
+      "batchId": "20260808T094453Z-06e847df",
+      "page": 1,
+      "number": 10,
+      "word": "succession",
+      "phonetic": "səkˈseʃn",
+      "meaning": "n.一连串；继承，继承权；连续",
+      "sourceTruncated": false
+    },
+    {
+      "id": "20260808T094453Z-06e847df:p1-11",
+      "batchId": "20260808T094453Z-06e847df",
+      "page": 1,
+      "number": 11,
+      "word": "succeed",
+      "phonetic": "səkˈsiːd",
+      "meaning": "vi.成功；做成；继承；达到目的vt.随后出现，接替",
+      "sourceTruncated": false
+    },
+    {
+      "id": "20260808T094453Z-06e847df:p1-12",
+      "batchId": "20260808T094453Z-06e847df",
+      "page": 1,
+      "number": 12,
+      "word": "concession",
+      "phonetic": "kənˈseʃn",
+      "meaning": "n.让步，妥协；特许权；摊位",
+      "sourceTruncated": false
+    },
+    {
+      "id": "20260808T094453Z-06e847df:p1-13",
+      "batchId": "20260808T094453Z-06e847df",
+      "page": 1,
+      "number": 13,
+      "word": "concede",
+      "phonetic": "kənˈsiːd",
+      "meaning": "vt.承认；让步v.认（输）",
+      "sourceTruncated": false
+    },
+    {
+      "id": "20260808T094453Z-06e847df:p1-14",
+      "batchId": "20260808T094453Z-06e847df",
+      "page": 1,
+      "number": 14,
+      "word": "predecessor",
+      "phonetic": "ˈpriːdəsesə(r)",
+      "meaning": "n.前任；前辈；原先的东西；被替代的事物",
+      "sourceTruncated": false
+    },
+    {
+      "id": "20260808T094453Z-06e847df:p1-15",
+      "batchId": "20260808T094453Z-06e847df",
+      "page": 1,
+      "number": 15,
+      "word": "unprecedented",
+      "phonetic": "ʌnˈpresɪdentɪd",
+      "meaning": "adj.史无前例的；空前的",
+      "sourceTruncated": false
+    },
+    {
+      "id": "20260808T094453Z-06e847df:p1-16",
+      "batchId": "20260808T094453Z-06e847df",
+      "page": 1,
+      "number": 16,
+      "word": "precedent",
+      "phonetic": "ˈpresɪdənt",
+      "meaning": "n.先例；实例；常规，惯例adj.在先的，前面的",
+      "sourceTruncated": false
+    },
+    {
+      "id": "20260808T094453Z-06e847df:p1-17",
+      "batchId": "20260808T094453Z-06e847df",
+      "page": 1,
+      "number": 17,
+      "word": "preceding",
+      "phonetic": "prɪˈsiːdɪŋ",
+      "meaning": "adj.前面的，在先的v.在…之前发生（precede 的现在…",
+      "sourceTruncated": true
+    },
+    {
+      "id": "20260808T094453Z-06e847df:p1-18",
+      "batchId": "20260808T094453Z-06e847df",
+      "page": 1,
+      "number": 18,
+      "word": "precede",
+      "phonetic": "prɪˈsiːd",
+      "meaning": "vt.在…之前发生（或出现）；先于；走在…前面",
+      "sourceTruncated": false
+    },
+    {
+      "id": "20260808T094453Z-06e847df:p1-19",
+      "batchId": "20260808T094453Z-06e847df",
+      "page": 1,
+      "number": 19,
+      "word": "transcend",
+      "phonetic": "trænˈsend",
+      "meaning": "vt.超出；超越",
+      "sourceTruncated": false
+    },
+    {
+      "id": "20260808T094453Z-06e847df:p1-20",
+      "batchId": "20260808T094453Z-06e847df",
+      "page": 1,
+      "number": 20,
+      "word": "surpass",
+      "phonetic": "səˈpɑːs",
+      "meaning": "vt.超过；胜过；优于",
+      "sourceTruncated": false
+    },
+    {
+      "id": "20260808T094453Z-06e847df:p1-21",
+      "batchId": "20260808T094453Z-06e847df",
+      "page": 1,
+      "number": 21,
+      "word": "surplus",
+      "phonetic": "ˈsɜːpləs",
+      "meaning": "n.过剩；过剩量；盈余；顺差adj.过剩的，剩余的",
+      "sourceTruncated": false
+    },
+    {
+      "id": "20260808T094453Z-06e847df:p1-22",
+      "batchId": "20260808T094453Z-06e847df",
+      "page": 1,
+      "number": 22,
+      "word": "surfing",
+      "phonetic": "ˈsɜːfɪŋ",
+      "meaning": "n.冲浪；网上冲浪v.冲浪(surf 的现在分词)",
+      "sourceTruncated": false
+    },
+    {
+      "id": "20260808T094453Z-06e847df:p1-23",
+      "batchId": "20260808T094453Z-06e847df",
+      "page": 1,
+      "number": 23,
+      "word": "surf",
+      "phonetic": "sɜːf",
+      "meaning": "v.冲浪；网上冲浪n.激浪；拍岸浪花",
+      "sourceTruncated": false
+    },
+    {
+      "id": "20260808T094453Z-06e847df:p1-24",
+      "batchId": "20260808T094453Z-06e847df",
+      "page": 1,
+      "number": 24,
+      "word": "surface",
+      "phonetic": "ˈsɜːfɪs",
+      "meaning": "n.表面；水面；外表vi.浮到水面；出现，显露",
+      "sourceTruncated": false
+    },
+    {
+      "id": "20260808T094453Z-06e847df:p1-25",
+      "batchId": "20260808T094453Z-06e847df",
+      "page": 1,
+      "number": 25,
+      "word": "commonplace",
+      "phonetic": "ˈkɒmənpleɪs",
+      "meaning": "adj.平凡的，不足为奇的；普通的；普遍的n.平常的事；…",
+      "sourceTruncated": true
+    },
+    {
+      "id": "20260808T094453Z-06e847df:p1-26",
+      "batchId": "20260808T094453Z-06e847df",
+      "page": 1,
+      "number": 26,
+      "word": "subordination",
+      "phonetic": "səˌbɔːdɪˈneɪʃn",
+      "meaning": "n.附属，主从关系",
+      "sourceTruncated": false
+    },
+    {
+      "id": "20260808T094453Z-06e847df:p1-27",
+      "batchId": "20260808T094453Z-06e847df",
+      "page": 1,
+      "number": 27,
+      "word": "subordinate",
+      "phonetic": "səˈbɔːdɪnət",
+      "meaning": "adj.从属的；次要的n.下级，下属vt.把…置于次要地位",
+      "sourceTruncated": false
+    },
+    {
+      "id": "20260808T094453Z-06e847df:p1-28",
+      "batchId": "20260808T094453Z-06e847df",
+      "page": 1,
+      "number": 28,
+      "word": "coordinator",
+      "phonetic": "kəʊˈɔːdɪneɪtə",
+      "meaning": "n.协调者，统筹人",
+      "sourceTruncated": false
+    },
+    {
+      "id": "20260808T094453Z-06e847df:p1-29",
+      "batchId": "20260808T094453Z-06e847df",
+      "page": 1,
+      "number": 29,
+      "word": "coordination",
+      "phonetic": "kəʊˌɔːdɪˈneɪʃn",
+      "meaning": "n.协调；合作；协调能力",
+      "sourceTruncated": false
+    },
+    {
+      "id": "20260808T094453Z-06e847df:p1-30",
+      "batchId": "20260808T094453Z-06e847df",
+      "page": 1,
+      "number": 30,
+      "word": "coordinate",
+      "phonetic": "kəʊˈɔːdɪneɪt",
+      "meaning": "vt.使协调；使相配合v.搭配n.坐标；配套服装adj.协调…",
+      "sourceTruncated": true
+    },
+    {
+      "id": "20260808T094453Z-06e847df:p1-31",
+      "batchId": "20260808T094453Z-06e847df",
+      "page": 1,
+      "number": 31,
+      "word": "tremendous",
+      "phonetic": "trəˈmendəs",
+      "meaning": "adj.巨大的，极大的；极好的",
+      "sourceTruncated": false
+    },
+    {
+      "id": "20260808T094453Z-06e847df:p1-32",
+      "batchId": "20260808T094453Z-06e847df",
+      "page": 1,
+      "number": 32,
+      "word": "instance",
+      "phonetic": "ˈɪnstəns",
+      "meaning": "n.例子；事例；实例",
+      "sourceTruncated": false
+    },
+    {
+      "id": "20260808T094453Z-06e847df:p1-33",
+      "batchId": "20260808T094453Z-06e847df",
+      "page": 1,
+      "number": 33,
+      "word": "exemplify",
+      "phonetic": "ɪɡˈzemplɪfaɪ",
+      "meaning": "vt.是…的典范；举例说明",
+      "sourceTruncated": false
+    },
+    {
+      "id": "20260808T094453Z-06e847df:p1-34",
+      "batchId": "20260808T094453Z-06e847df",
+      "page": 1,
+      "number": 34,
+      "word": "exemplary",
+      "phonetic": "ɪɡˈzempləri",
+      "meaning": "adj.典范的，可作榜样的",
+      "sourceTruncated": false
+    },
+    {
+      "id": "20260808T094453Z-06e847df:p1-35",
+      "batchId": "20260808T094453Z-06e847df",
+      "page": 1,
+      "number": 35,
+      "word": "exceptional",
+      "phonetic": "ɪkˈsepʃənl",
+      "meaning": "adj.杰出的，优异的，非凡的；异常的，罕见的；特殊…",
+      "sourceTruncated": true
+    },
+    {
+      "id": "20260808T094453Z-06e847df:p1-36",
+      "batchId": "20260808T094453Z-06e847df",
+      "page": 1,
+      "number": 36,
+      "word": "exception",
+      "phonetic": "ɪkˈsepʃn",
+      "meaning": "n.例外；例外的事物",
+      "sourceTruncated": false
+    },
+    {
+      "id": "20260808T094453Z-06e847df:p1-37",
+      "batchId": "20260808T094453Z-06e847df",
+      "page": 1,
+      "number": 37,
+      "word": "magnify",
+      "phonetic": "ˈmæɡnɪfaɪ",
+      "meaning": "vt.放大；扩大；增强；夸张",
+      "sourceTruncated": false
+    },
+    {
+      "id": "20260808T094453Z-06e847df:p1-38",
+      "batchId": "20260808T094453Z-06e847df",
+      "page": 1,
+      "number": 38,
+      "word": "magnitude",
+      "phonetic": "ˈmæɡnɪtjuːd",
+      "meaning": "n.震级；规模；重要性；大小；巨大",
+      "sourceTruncated": false
+    },
+    {
+      "id": "20260808T094453Z-06e847df:p1-39",
+      "batchId": "20260808T094453Z-06e847df",
+      "page": 1,
+      "number": 39,
+      "word": "magnificent",
+      "phonetic": "mæɡˈnɪfɪsnt",
+      "meaning": "adj.壮丽的；宏伟的；值得赞扬的",
+      "sourceTruncated": false
+    },
+    {
+      "id": "20260808T094453Z-06e847df:p1-40",
+      "batchId": "20260808T094453Z-06e847df",
+      "page": 1,
+      "number": 40,
+      "word": "grand",
+      "phonetic": "ɡrænd",
+      "meaning": "adj.壮丽的，堂皇的；（常用于大型建筑物的名称前）大…",
+      "sourceTruncated": true
+    },
+    {
+      "id": "20260808T094453Z-06e847df:p2-01",
+      "batchId": "20260808T094453Z-06e847df",
+      "page": 2,
+      "number": 1,
+      "word": "terrific",
+      "phonetic": "təˈrɪfɪk",
+      "meaning": "adj.极好的；很棒的； 极大的",
+      "sourceTruncated": false
+    },
+    {
+      "id": "20260808T094453Z-06e847df:p2-02",
+      "batchId": "20260808T094453Z-06e847df",
+      "page": 2,
+      "number": 2,
+      "word": "fabulous",
+      "phonetic": "ˈfæbjələs",
+      "meaning": "adj.极好的；很大的；寓言般的",
+      "sourceTruncated": false
+    },
+    {
+      "id": "20260808T094453Z-06e847df:p2-03",
+      "batchId": "20260808T094453Z-06e847df",
+      "page": 2,
+      "number": 3,
+      "word": "brilliance",
+      "phonetic": "brɪliəns",
+      "meaning": "n.才智；光辉，灿烂",
+      "sourceTruncated": false
+    },
+    {
+      "id": "20260808T094453Z-06e847df:p2-04",
+      "batchId": "20260808T094453Z-06e847df",
+      "page": 2,
+      "number": 4,
+      "word": "brilliant",
+      "phonetic": "ˈbrɪliənt",
+      "meaning": "adj.巧妙的；明亮的；聪明的；杰出的；成功的，辉煌的",
+      "sourceTruncated": false
+    },
+    {
+      "id": "20260808T094453Z-06e847df:p2-05",
+      "batchId": "20260808T094453Z-06e847df",
+      "page": 2,
+      "number": 5,
+      "word": "commentator",
+      "phonetic": "ˈkɒmənteɪtə(r)",
+      "meaning": "n.评论员，现场解说员",
+      "sourceTruncated": false
+    },
+    {
+      "id": "20260808T094453Z-06e847df:p2-06",
+      "batchId": "20260808T094453Z-06e847df",
+      "page": 2,
+      "number": 6,
+      "word": "commentary",
+      "phonetic": "ˈkɒməntri",
+      "meaning": "n.实况报道，现场解说；评论",
+      "sourceTruncated": false
+    },
+    {
+      "id": "20260808T094453Z-06e847df:p2-07",
+      "batchId": "20260808T094453Z-06e847df",
+      "page": 2,
+      "number": 7,
+      "word": "comment",
+      "phonetic": "ˈkɒment",
+      "meaning": "n.评论，意见；批评，指责v.作出评论；发表意见",
+      "sourceTruncated": false
+    },
+    {
+      "id": "20260808T094453Z-06e847df:p2-08",
+      "batchId": "20260808T094453Z-06e847df",
+      "page": 2,
+      "number": 8,
+      "word": "remarkable",
+      "phonetic": "rɪˈmɑːkəbl",
+      "meaning": "adj.非凡的；奇异的；显著的；引人注目的",
+      "sourceTruncated": false
+    },
+    {
+      "id": "20260808T094453Z-06e847df:p2-09",
+      "batchId": "20260808T094453Z-06e847df",
+      "page": 2,
+      "number": 9,
+      "word": "remark",
+      "phonetic": "rɪˈmɑːk",
+      "meaning": "n.谈论；言论；评述；引人注目；显耀v.说起；谈论；评论",
+      "sourceTruncated": false
+    },
+    {
+      "id": "20260808T094453Z-06e847df:p2-10",
+      "batchId": "20260808T094453Z-06e847df",
+      "page": 2,
+      "number": 10,
+      "word": "outstanding",
+      "phonetic": "aʊtˈstændɪŋ",
+      "meaning": "adj.优秀的；杰出的；出色的；明显的；重要的；未支…",
+      "sourceTruncated": true
+    },
+    {
+      "id": "20260808T094453Z-06e847df:p2-11",
+      "batchId": "20260808T094453Z-06e847df",
+      "page": 2,
+      "number": 11,
+      "word": "prominence",
+      "phonetic": "ˈprɒmɪnəns",
+      "meaning": "n.重要性，显著地位；杰出，著名；凸起，突出物",
+      "sourceTruncated": false
+    },
+    {
+      "id": "20260808T094453Z-06e847df:p2-12",
+      "batchId": "20260808T094453Z-06e847df",
+      "page": 2,
+      "number": 12,
+      "word": "prominent",
+      "phonetic": "ˈprɒmɪnənt",
+      "meaning": "adj.重要的；著名的；杰出的；显著的；突出的",
+      "sourceTruncated": false
+    },
+    {
+      "id": "20260808T094453Z-06e847df:p2-13",
+      "batchId": "20260808T094453Z-06e847df",
+      "page": 2,
+      "number": 13,
+      "word": "eminence",
+      "phonetic": "ˈemɪnəns",
+      "meaning": "n.著名，卓越；名人",
+      "sourceTruncated": false
+    },
+    {
+      "id": "20260808T094453Z-06e847df:p2-14",
+      "batchId": "20260808T094453Z-06e847df",
+      "page": 2,
+      "number": 14,
+      "word": "eminent",
+      "phonetic": "ˈemɪnənt",
+      "meaning": "adj.杰出的，著名的",
+      "sourceTruncated": false
+    },
+    {
+      "id": "20260808T094453Z-06e847df:p2-15",
+      "batchId": "20260808T094453Z-06e847df",
+      "page": 2,
+      "number": 15,
+      "word": "conqueror",
+      "phonetic": "ˈkɒŋkərə",
+      "meaning": "n.征服者；占领者；胜利者",
+      "sourceTruncated": false
+    },
+    {
+      "id": "20260808T094453Z-06e847df:p2-16",
+      "batchId": "20260808T094453Z-06e847df",
+      "page": 2,
+      "number": 16,
+      "word": "conquest",
+      "phonetic": "ˈkɒŋkwest",
+      "meaning": "n.征服；占领地；俘虏；控制",
+      "sourceTruncated": false
+    },
+    {
+      "id": "20260808T094453Z-06e847df:p2-17",
+      "batchId": "20260808T094453Z-06e847df",
+      "page": 2,
+      "number": 17,
+      "word": "conquer",
+      "phonetic": "ˈkɒŋkə(r)",
+      "meaning": "vt.占领；征服；击败，战胜；克服",
+      "sourceTruncated": false
+    },
+    {
+      "id": "20260808T094453Z-06e847df:p2-18",
+      "batchId": "20260808T094453Z-06e847df",
+      "page": 2,
+      "number": 18,
+      "word": "ambassador",
+      "phonetic": "æmˈbæsədə(r)",
+      "meaning": "n.大使；使节",
+      "sourceTruncated": false
+    },
+    {
+      "id": "20260808T094453Z-06e847df:p2-19",
+      "batchId": "20260808T094453Z-06e847df",
+      "page": 2,
+      "number": 19,
+      "word": "parliamentary",
+      "phonetic": "ˌpɑːləˈmentri",
+      "meaning": "adj.议会的，国会的",
+      "sourceTruncated": false
+    },
+    {
+      "id": "20260808T094453Z-06e847df:p2-20",
+      "batchId": "20260808T094453Z-06e847df",
+      "page": 2,
+      "number": 20,
+      "word": "parliament",
+      "phonetic": "ˈpɑːləmənt",
+      "meaning": "n.议会，国会（主要用于英国）；一届议会（会期）",
+      "sourceTruncated": false
+    },
+    {
+      "id": "20260808T094453Z-06e847df:p2-21",
+      "batchId": "20260808T094453Z-06e847df",
+      "page": 2,
+      "number": 21,
+      "word": "congressional",
+      "phonetic": "kənˈɡreʃənl",
+      "meaning": "adj.立法机构的；代表大会的；（美国）国会的",
+      "sourceTruncated": false
+    },
+    {
+      "id": "20260808T094453Z-06e847df:p2-22",
+      "batchId": "20260808T094453Z-06e847df",
+      "page": 2,
+      "number": 22,
+      "word": "congress",
+      "phonetic": "ˈkɒŋɡres",
+      "meaning": "n.代表大会；国会",
+      "sourceTruncated": false
+    },
+    {
+      "id": "20260808T094453Z-06e847df:p2-23",
+      "batchId": "20260808T094453Z-06e847df",
+      "page": 2,
+      "number": 23,
+      "word": "aggression",
+      "phonetic": "əˈɡreʃn",
+      "meaning": "n.好斗；攻击性；侵犯，侵略；挑衅",
+      "sourceTruncated": false
+    },
+    {
+      "id": "20260808T094453Z-06e847df:p2-24",
+      "batchId": "20260808T094453Z-06e847df",
+      "page": 2,
+      "number": 24,
+      "word": "aggressive",
+      "phonetic": "əˈɡresɪv",
+      "meaning": "adj.好斗的，挑衅的；积极进取的；侵略性的",
+      "sourceTruncated": false
+    },
+    {
+      "id": "20260808T094453Z-06e847df:p2-25",
+      "batchId": "20260808T094453Z-06e847df",
+      "page": 2,
+      "number": 25,
+      "word": "ambitious",
+      "phonetic": "æmˈbɪʃəs",
+      "meaning": "adj.有抱负的，有野心的，有雄心的；宏大的",
+      "sourceTruncated": false
+    },
+    {
+      "id": "20260808T094453Z-06e847df:p2-26",
+      "batchId": "20260808T094453Z-06e847df",
+      "page": 2,
+      "number": 26,
+      "word": "ambition",
+      "phonetic": "æmˈbɪʃn",
+      "meaning": "n.理想，追求；雄心；野心",
+      "sourceTruncated": false
+    },
+    {
+      "id": "20260808T094453Z-06e847df:p2-27",
+      "batchId": "20260808T094453Z-06e847df",
+      "page": 2,
+      "number": 27,
+      "word": "integrity",
+      "phonetic": "ɪnˈteɡrəti",
+      "meaning": "n.诚实正直；完整；完好",
+      "sourceTruncated": false
+    },
+    {
+      "id": "20260808T094453Z-06e847df:p2-28",
+      "batchId": "20260808T094453Z-06e847df",
+      "page": 2,
+      "number": 28,
+      "word": "indulge",
+      "phonetic": "ɪnˈdʌldʒ",
+      "meaning": "v.(使自己) 沉迷 (于)vt.使满足 ；纵容，迁就；参与",
+      "sourceTruncated": false
+    },
+    {
+      "id": "20260808T094453Z-06e847df:p2-29",
+      "batchId": "20260808T094453Z-06e847df",
+      "page": 2,
+      "number": 29,
+      "word": "subtle",
+      "phonetic": "ˈsʌtl",
+      "meaning": "adj.微妙的；巧妙的；敏锐的；狡猾的",
+      "sourceTruncated": false
+    },
+    {
+      "id": "20260808T094453Z-06e847df:p2-30",
+      "batchId": "20260808T094453Z-06e847df",
+      "page": 2,
+      "number": 30,
+      "word": "acknowledgement",
+      "phonetic": "əkˈnɒlɪdʒmənt",
+      "meaning": "n.承认；感谢",
+      "sourceTruncated": false
+    },
+    {
+      "id": "20260808T094453Z-06e847df:p2-31",
+      "batchId": "20260808T094453Z-06e847df",
+      "page": 2,
+      "number": 31,
+      "word": "humor",
+      "phonetic": "ˈhjuːmə(r)",
+      "meaning": "n.幽默；情绪vt.迎合，迁就",
+      "sourceTruncated": false
+    },
+    {
+      "id": "20260808T094453Z-06e847df:p2-32",
+      "batchId": "20260808T094453Z-06e847df",
+      "page": 2,
+      "number": 32,
+      "word": "literal",
+      "phonetic": "ˈlɪtərəl",
+      "meaning": "adj.字面上的；按照原文的；刻板的",
+      "sourceTruncated": false
+    },
+    {
+      "id": "20260808T094453Z-06e847df:p2-33",
+      "batchId": "20260808T094453Z-06e847df",
+      "page": 2,
+      "number": 33,
+      "word": "minimize",
+      "phonetic": "ˈmɪnɪmaɪz",
+      "meaning": "vt.减至最小；贬低；使最小化",
+      "sourceTruncated": false
+    },
+    {
+      "id": "20260808T094453Z-06e847df:p2-34",
+      "batchId": "20260808T094453Z-06e847df",
+      "page": 2,
+      "number": 34,
+      "word": "endure",
+      "phonetic": "ɪnˈdjʊə(r)",
+      "meaning": "v.忍耐，忍受；持续，持久",
+      "sourceTruncated": false
+    },
+    {
+      "id": "20260808T094453Z-06e847df:p2-35",
+      "batchId": "20260808T094453Z-06e847df",
+      "page": 2,
+      "number": 35,
+      "word": "mobile",
+      "phonetic": "ˈməʊbaɪl",
+      "meaning": "adj.可移动的；易变的；流动的n.手机；风铃，悬挂饰物",
+      "sourceTruncated": false
+    },
+    {
+      "id": "20260808T094453Z-06e847df:p2-36",
+      "batchId": "20260808T094453Z-06e847df",
+      "page": 2,
+      "number": 36,
+      "word": "indifference",
+      "phonetic": "ɪnˈdɪfrəns",
+      "meaning": "n.漠不关心；不感兴趣；冷淡",
+      "sourceTruncated": false
+    },
+    {
+      "id": "20260808T094453Z-06e847df:p2-37",
+      "batchId": "20260808T094453Z-06e847df",
+      "page": 2,
+      "number": 37,
+      "word": "compact",
+      "phonetic": "kəmˈpækt",
+      "meaning": "adj.小型的，袖珍的；紧凑的n.小汽车；合同，协定，契…",
+      "sourceTruncated": true
+    },
+    {
+      "id": "20260808T094453Z-06e847df:p2-38",
+      "batchId": "20260808T094453Z-06e847df",
+      "page": 2,
+      "number": 38,
+      "word": "aggressive",
+      "phonetic": "əˈɡresɪv",
+      "meaning": "adj.好斗的，挑衅的；积极进取的；侵略性的",
+      "sourceTruncated": false
+    },
+    {
+      "id": "20260808T094453Z-06e847df:p2-39",
+      "batchId": "20260808T094453Z-06e847df",
+      "page": 2,
+      "number": 39,
+      "word": "formerly",
+      "phonetic": "ˈfɔːməli",
+      "meaning": "adv.以前，从前",
+      "sourceTruncated": false
+    },
+    {
+      "id": "20260808T094453Z-06e847df:p2-40",
+      "batchId": "20260808T094453Z-06e847df",
+      "page": 2,
+      "number": 40,
+      "word": "allege",
+      "phonetic": "əˈledʒ",
+      "meaning": "vt.断言，宣称；指控",
+      "sourceTruncated": false
+    },
+    {
+      "id": "20260808T094453Z-06e847df:p3-01",
+      "batchId": "20260808T094453Z-06e847df",
+      "page": 3,
+      "number": 1,
+      "word": "acknowledge",
+      "phonetic": "əkˈnɒlɪdʒ",
+      "meaning": "vt.承认；认可；告知收到；感谢；跟……打招呼，理会",
+      "sourceTruncated": false
+    },
+    {
+      "id": "20260808T094453Z-06e847df:p3-02",
+      "batchId": "20260808T094453Z-06e847df",
+      "page": 3,
+      "number": 2,
+      "word": "flap",
+      "phonetic": "flæp",
+      "meaning": "v.快速摆动；拍打；忧虑；激动n. 振（翅），拍动；…",
+      "sourceTruncated": true
+    },
+    {
+      "id": "20260808T094453Z-06e847df:p3-03",
+      "batchId": "20260808T094453Z-06e847df",
+      "page": 3,
+      "number": 3,
+      "word": "identical",
+      "phonetic": "aɪˈdentɪkl",
+      "meaning": "adj.完全相同的；同一的，相同的",
+      "sourceTruncated": false
+    },
+    {
+      "id": "20260808T094453Z-06e847df:p3-04",
+      "batchId": "20260808T094453Z-06e847df",
+      "page": 3,
+      "number": 4,
+      "word": "vulnerable",
+      "phonetic": "ˈvʌlnərəbl",
+      "meaning": "adj.脆弱的；易受伤害的；容易患…病的",
+      "sourceTruncated": false
+    },
+    {
+      "id": "20260808T094453Z-06e847df:p3-05",
+      "batchId": "20260808T094453Z-06e847df",
+      "page": 3,
+      "number": 5,
+      "word": "premise",
+      "phonetic": "ˈpremɪs",
+      "meaning": "n.前提；假定v.以…为基础，以…为前提",
+      "sourceTruncated": false
+    },
+    {
+      "id": "20260808T094453Z-06e847df:p3-06",
+      "batchId": "20260808T094453Z-06e847df",
+      "page": 3,
+      "number": 6,
+      "word": "cling",
+      "phonetic": "klɪŋ",
+      "meaning": "vi.抓紧；紧握；粘住；依恋；坚守",
+      "sourceTruncated": false
+    },
+    {
+      "id": "20260808T094453Z-06e847df:p3-07",
+      "batchId": "20260808T094453Z-06e847df",
+      "page": 3,
+      "number": 7,
+      "word": "follow",
+      "phonetic": "ˈfɒləʊ",
+      "meaning": "v.跟随；在…后发生；理解；仿效vt.沿着；遵循；追随",
+      "sourceTruncated": false
+    },
+    {
+      "id": "20260808T094453Z-06e847df:p3-08",
+      "batchId": "20260808T094453Z-06e847df",
+      "page": 3,
+      "number": 8,
+      "word": "enroll",
+      "phonetic": "ɪnˈrəʊl",
+      "meaning": "v.加入，招收，注册",
+      "sourceTruncated": false
+    },
+    {
+      "id": "20260808T094453Z-06e847df:p3-09",
+      "batchId": "20260808T094453Z-06e847df",
+      "page": 3,
+      "number": 9,
+      "word": "circulation",
+      "phonetic": "ˌsɜːkjəˈleɪʃn",
+      "meaning": "n.血液循环；流通；发行量；交际",
+      "sourceTruncated": false
+    },
+    {
+      "id": "20260808T094453Z-06e847df:p3-10",
+      "batchId": "20260808T094453Z-06e847df",
+      "page": 3,
+      "number": 10,
+      "word": "imaginative",
+      "phonetic": "ɪˈmædʒɪnətɪv",
+      "meaning": "adj.富于想象力的；创新的",
+      "sourceTruncated": false
+    },
+    {
+      "id": "20260808T094453Z-06e847df:p3-11",
+      "batchId": "20260808T094453Z-06e847df",
+      "page": 3,
+      "number": 11,
+      "word": "prompt",
+      "phonetic": "prɒmpt",
+      "meaning": "vt.促使；鼓励；提示adj.及时的；迅速的；准时的adv.准…",
+      "sourceTruncated": true
+    },
+    {
+      "id": "20260808T094453Z-06e847df:p3-12",
+      "batchId": "20260808T094453Z-06e847df",
+      "page": 3,
+      "number": 12,
+      "word": "consultant",
+      "phonetic": "kənˈsʌltənt",
+      "meaning": "n.顾问；高级顾问医师，会诊医师",
+      "sourceTruncated": false
+    },
+    {
+      "id": "20260808T094453Z-06e847df:p3-13",
+      "batchId": "20260808T094453Z-06e847df",
+      "page": 3,
+      "number": 13,
+      "word": "alternate",
+      "phonetic": "ɔːlˈtɜːnət",
+      "meaning": "adj.交替的；间隔的；可替代的v.(使) 轮流；(使) 交替…",
+      "sourceTruncated": true
+    },
+    {
+      "id": "20260808T094453Z-06e847df:p3-14",
+      "batchId": "20260808T094453Z-06e847df",
+      "page": 3,
+      "number": 14,
+      "word": "linger",
+      "phonetic": "ˈlɪŋɡə(r)",
+      "meaning": "vi.继续存留；逗留,徘徊；奄奄一息",
+      "sourceTruncated": false
+    },
+    {
+      "id": "20260808T094453Z-06e847df:p3-15",
+      "batchId": "20260808T094453Z-06e847df",
+      "page": 3,
+      "number": 15,
+      "word": "explicitly",
+      "phonetic": "ɪkˈsplɪsɪtli",
+      "meaning": "adv.清楚地，明确地，不含糊地",
+      "sourceTruncated": false
+    },
+    {
+      "id": "20260808T094453Z-06e847df:p3-16",
+      "batchId": "20260808T094453Z-06e847df",
+      "page": 3,
+      "number": 16,
+      "word": "trend",
+      "phonetic": "trend",
+      "meaning": "n.趋势，倾向v.趋向，倾向",
+      "sourceTruncated": false
+    },
+    {
+      "id": "20260808T094453Z-06e847df:p3-17",
+      "batchId": "20260808T094453Z-06e847df",
+      "page": 3,
+      "number": 17,
+      "word": "conspicuous",
+      "phonetic": "kənˈspɪkjuəs",
+      "meaning": "adj.明显的；惹人注意的",
+      "sourceTruncated": false
+    },
+    {
+      "id": "20260808T094453Z-06e847df:p3-18",
+      "batchId": "20260808T094453Z-06e847df",
+      "page": 3,
+      "number": 18,
+      "word": "compensate",
+      "phonetic": "ˈkɒmpenseɪt",
+      "meaning": "vi.补偿；弥补vt.补偿，赔偿",
+      "sourceTruncated": false
+    },
+    {
+      "id": "20260808T094453Z-06e847df:p3-19",
+      "batchId": "20260808T094453Z-06e847df",
+      "page": 3,
+      "number": 19,
+      "word": "temperament",
+      "phonetic": "ˈtemprəmənt",
+      "meaning": "n.气质；暴躁；调律；性格；性情",
+      "sourceTruncated": false
+    },
+    {
+      "id": "20260808T094453Z-06e847df:p3-20",
+      "batchId": "20260808T094453Z-06e847df",
+      "page": 3,
+      "number": 20,
+      "word": "tackle",
+      "phonetic": "ˈtækl",
+      "meaning": "vt.处理；与某人交涉；抓获v.抢球，抢断；擒抱摔倒n.…",
+      "sourceTruncated": true
+    },
+    {
+      "id": "20260808T094453Z-06e847df:p3-21",
+      "batchId": "20260808T094453Z-06e847df",
+      "page": 3,
+      "number": 21,
+      "word": "lease",
+      "phonetic": "liːs",
+      "meaning": "n.租约，租契vt.租借；租用；出租",
+      "sourceTruncated": false
+    },
+    {
+      "id": "20260808T094453Z-06e847df:p3-22",
+      "batchId": "20260808T094453Z-06e847df",
+      "page": 3,
+      "number": 22,
+      "word": "profound",
+      "phonetic": "prəˈfaʊnd",
+      "meaning": "adj.（影响）巨大的；深切的；深远的；知识渊博的；…",
+      "sourceTruncated": true
+    },
+    {
+      "id": "20260808T094453Z-06e847df:p3-23",
+      "batchId": "20260808T094453Z-06e847df",
+      "page": 3,
+      "number": 23,
+      "word": "mechanism",
+      "phonetic": "ˈmekənɪzəm",
+      "meaning": "n.机械装置；机件；方法；机制",
+      "sourceTruncated": false
+    },
+    {
+      "id": "20260808T094453Z-06e847df:p3-24",
+      "batchId": "20260808T094453Z-06e847df",
+      "page": 3,
+      "number": 24,
+      "word": "magnify",
+      "phonetic": "ˈmæɡnɪfaɪ",
+      "meaning": "vt.放大；扩大；增强；夸张",
+      "sourceTruncated": false
+    },
+    {
+      "id": "20260808T094453Z-06e847df:p3-25",
+      "batchId": "20260808T094453Z-06e847df",
+      "page": 3,
+      "number": 25,
+      "word": "collaborate",
+      "phonetic": "kəˈlæbəreɪt",
+      "meaning": "vi.合作，协作；通敌",
+      "sourceTruncated": false
+    },
+    {
+      "id": "20260808T094453Z-06e847df:p3-26",
+      "batchId": "20260808T094453Z-06e847df",
+      "page": 3,
+      "number": 26,
+      "word": "breed",
+      "phonetic": "briːd",
+      "meaning": "vi.繁殖vt.饲养，培育；导致；使养成n.品种；种类",
+      "sourceTruncated": false
+    },
+    {
+      "id": "20260808T094453Z-06e847df:p3-27",
+      "batchId": "20260808T094453Z-06e847df",
+      "page": 3,
+      "number": 27,
+      "word": "microprocessor",
+      "phonetic": "ˌmaɪkrəʊˈprəʊsesə(r)",
+      "meaning": "n.微处理器",
+      "sourceTruncated": false
+    },
+    {
+      "id": "20260808T094453Z-06e847df:p3-28",
+      "batchId": "20260808T094453Z-06e847df",
+      "page": 3,
+      "number": 28,
+      "word": "process",
+      "phonetic": "ˈprəʊses",
+      "meaning": "n.进程，步骤，过程vt.加工，处理；生产，制造vi.列…",
+      "sourceTruncated": true
+    },
+    {
+      "id": "20260808T094453Z-06e847df:p3-29",
+      "batchId": "20260808T094453Z-06e847df",
+      "page": 3,
+      "number": 29,
+      "word": "benefit",
+      "phonetic": "ˈbenɪfɪt",
+      "meaning": "n.益处，好处；福利，救济金v.受益",
+      "sourceTruncated": false
+    }
+  ]
+}

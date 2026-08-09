@@ -1,0 +1,40 @@
+---
+import {
+	type VocabularyRelationData,
+	VocabularyTracker,
+} from "@components/features/english-learning";
+import { PageHeader } from "@components/features/page-header";
+import MainGridLayout from "@layouts/MainGridLayout.astro";
+
+import vocabularyData from "../data/vocabulary.json";
+import vocabularyRelationData from "../data/vocabulary-relations.json";
+
+const relationData = vocabularyRelationData as VocabularyRelationData;
+
+const title = "英语学习";
+const subtitle = "从单词开始，留下每一次学习和掌握的进度。";
+---
+
+<MainGridLayout title={title} description={subtitle}>
+	<script>
+		import("../scripts/right-sidebar-layout.js");
+		import { loadIconify } from "../utils/icon-loader";
+
+		loadIconify().catch((error) => {
+			console.error("Failed to load Iconify:", error);
+		});
+	</script>
+
+	<div class="flex w-full rounded-(--radius-large) overflow-hidden relative min-h-32">
+		<div class="card-base z-10 px-5 sm:px-9 py-6 relative w-full">
+			<PageHeader title={title} subtitle={subtitle} />
+			<VocabularyTracker
+				client:load
+				entries={vocabularyData.entries}
+				batches={vocabularyData.batches}
+				meta={vocabularyData.meta}
+				relationData={relationData}
+			/>
+		</div>
+	</div>
+</MainGridLayout>

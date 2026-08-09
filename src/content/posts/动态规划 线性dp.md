@@ -198,7 +198,8 @@ void solve() {
 ## 优化
 ### [P1020 [NOIP 1999 提高组] 导弹拦截 - 洛谷](https://www.luogu.com.cn/problem/P1020)
 需要用到二分维护最长不上升子序列来优化，第二小问用到Dilworth定理通过求最长上升子序列来得到最少需要几台机器拦截导弹，用到greater比较器使得lower_bound在递减序列中使用
-
+### [354. 俄罗斯套娃信封问题](https://leetcode.cn/problems/russian-doll-envelopes/)
+### [2111. 使数组 K 递增的最少操作次数](https://leetcode.cn/problems/minimum-operations-to-make-the-array-k-increasing/)
 ### [P2008 大朋友的数字 - 洛谷](https://www.luogu.com.cn/problem/P2008)
 ```cpp
 int n;
@@ -224,6 +225,49 @@ void solve() {
 	}
 }
 ```
+### [P8776 [蓝桥杯 2022 省 A] 最长不下降子序列 - 洛谷](https://www.luogu.com.cn/problem/P8776)
+```cpp
+ll n,k;
+void solve(){
+	cin>>n>>k;
+	vector<int> arr(n);
+	for(int i=0;i<n;i++){
+		cin>>arr[i];
+	}
+	vector<int> dp,right(n),b=arr;
+	reverse(b.begin(),b.end());
+	for(int i=0;i<n;i++){
+		if(dp.empty()||b[i]<=dp.back()){
+			dp.push_back(b[i]);
+			right[i]=dp.size();
+		}
+		else{
+			auto it=upper_bound(dp.begin(),dp.end(),b[i],greater<int>());
+			*it=b[i];
+			right[i]=(it-dp.begin())+1;
+		}
+	}
+	reverse(right.begin(),right.end());
+	dp.clear();
+	ll ans=0,pre=0;
+	for(int i=k;i<n;i++){
+		if(!dp.empty()){
+			pre=lower_bound(dp.begin(),dp.end(),arr[i])-dp.begin();
+		}
+		if(dp.empty()||arr[i-k]>=dp.back()){
+			dp.push_back(arr[i-k]);
+		}
+		else{
+			auto it=upper_bound(dp.begin(),dp.end(),arr[i-k]);
+			*it=arr[i-k];
+		}
+		ans=max(ans,pre+k+right[i]);
+	}
+	ans=max(ans,ll(dp.size())+k);
+	cout<<ans<<"\n";
+}
+```
+
 # 环状序列模型
 ### [918. 环形子数组的最大和](https://leetcode.cn/problems/maximum-sum-circular-subarray/)
 逻辑上数组首尾相连，实际上，答案有两种情况，一种是连续不断的子数组，另一种是中间有一段中断的“两个子数组”，后者就是整个数组和-最小子数组的情况，跑两次比较大小即可

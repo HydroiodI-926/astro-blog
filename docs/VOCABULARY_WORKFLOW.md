@@ -1,0 +1,69 @@
+# 英语单词板块工作流
+
+## 本地端：从 PDF 生成 JSON
+
+脚本会提取每条记录的 PDF 页码、页内编号、单词、音标和中文释义，并自动处理当前词表中的重复文本层与英文断词。每次导入都会按上传时间建立独立批次，追加到现有 JSON 中。
+
+```powershell
+python -m pip install pypdf
+pnpm extract:vocabulary -- "D:/path/to/奶酪单词-中英词表.pdf"
+```
+
+默认输出到 `src/data/vocabulary.json`。脚本会校验当前 3 页分别包含 40、40、29 条有效记录；编号缺失、单词异常或释义为空时会直接失败，不写入“看似成功”的数据。
+
+- 新文件会追加为新批次，批次 ID 由上传时间和文件摘要共同生成。
+- 同一个 PDF 再次提取时会更新原批次，不会重复添加。
+- 每条记录的 ID 包含批次 ID，因此不同批次都从编号 1 开始也不会冲突。
+- 默认使用执行脚本时的本地时间；补录历史词表时可传入明确时间：
+
+```powershell
+pnpm extract:vocabulary -- "D:/path/to/old-list.pdf" --uploaded-at "2026-08-01T20:30:00+08:00"
+```
+
+如果后续 PDF 的每页条目数变化，可以显式指定：
+
+```powershell
+pnpm extract:vocabulary -- "D:/path/to/new-list.pdf" --expected-page-counts 40,40,35
+```
+
+生成后运行数据测试：
+
+```powershell
+pnpm test:vocabulary
+```
+
+## 词汇关系：生成词族、同根词和同义词
+
+单词详情使用独立的 `src/data/vocabulary-relations.json`，不会污染 PDF 原始释义。首次生成时需要联网；之后原始响应会缓存在被 Git 忽略的 `cache/vocabulary/` 中：
+
+```powershell
+pnpm enrich:vocabulary
+```
+
+- Open English WordNet 2025 提供按义项分组的同义词与英文义项说明（CC BY 4.0）。
+- Kaikki / Wiktextract 提供词源、词形变化、派生词和相关词（CC BY-SA 4.0 / GFDL）。
+- “同根词”只连接当前词库中共享明确词源根标记的单词，不使用前缀拼写猜测。
+- 关系词若已在当前词库中，详情页会显示“词库内”，点击后可继续打开对应单词详情。
+- 若只想用已有缓存重新生成，可运行 `pnpm enrich:vocabulary -- --offline`。
+- 新增或更新 PDF 后需要重新运行 `pnpm enrich:vocabulary`；`pnpm test:vocabulary` 会检查关系数据是否覆盖新增词以及重复词条的全部 ID。
+- 重复拼写不会被删除：清单会显示全部记录并标记出现次数，搜索会查出全部记录；抽词复习则会按忽略大小写后的拼写去重，避免同一轮重复抽到。
+
+## 日历热度图与抽词复习统计
+
+- 日历文章列表下方展示当前自然月的词汇活动热度。
+- 上传量来自 `vocabulary.json` 的批次数据，会随 Git 部署同步到所有浏览器。
+- 每次点击“开始抽取”或“换一组”时，按实际抽到的单词数记录一轮复习；只进入复习页面不会计数。
+- 复习量保存在当前浏览器的 `localStorage`：`english-vocabulary-review-activity:v1`，不会随 Git 或其他浏览器同步。
+- 热度颜色按当天“上传单词数 + 抽背词次”计算；日期提示会分别显示上传词表和抽背轮次。
+
+## 网页端：展示与跟进
+
+- 页面地址：`/english/`
+- 数据来源：`src/data/vocabulary.json`
+- 单词清单按上传时间从新到旧分组，显示每批来源文件与条目数。
+- 支持按上传批次、单词或中文释义、PDF 页码和学习状态筛选。
+- 单词清单中的词条主体可点击打开详情，集中查看音标、词表释义、上传时间、PDF 位置和学习状态；原 PDF 已截断的释义会显示警告。
+- “抽词复习”会从当前筛选范围随机抽取 5、10、20 或 30 个不重复单词，默认隐藏中文释义，可逐张或批量揭晓；更换筛选条件会结束当前轮次。
+- 每个单词可标记为“未学习”“学习中”或“已掌握”。
+- 学习状态保存在浏览器 `localStorage` 的 `english-vocabulary-progress:v1` 中，不会上传到服务器。
+- 原 PDF 中以省略号结尾的释义会显示“原表已省略”标记，方便后续决定是否接入词典补全。
