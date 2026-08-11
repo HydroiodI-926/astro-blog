@@ -3,6 +3,7 @@ title: 动态规划-区间dp
 published: 2026-08-09
 tags:
   - 动态规划
+  - 区间dp
 category: 算法笔记
 description: 大范围的问题拆分成若干小范围的问题来求解
 ---
@@ -19,9 +20,11 @@ description: 大范围的问题拆分成若干小范围的问题来求解
 -  abba
 
 以上回文串解释了回文串的构成。当回文串的长度为奇数时，长度为1肯定是回文的，长度n大于1时，中心点为$n/2$（向下取整，下标从0开始）左右分布对应字符串对应相等如aba；当回文串为偶数时，长度为2时，左边起点定义为l，右边起点定义为r，l+1=r，长度大于2时，左边起点定义为l，右边起点定义为r，
-$$s[l+i]=s[r-i],\qquad
+$$
+s[l+i]=s[r-i],\qquad
 
-0\le i<\left\lfloor\frac{r-l+1}{2}\right\rfloor$$
+0\le i<\left\lfloor\frac{r-l+1}{2}\right\rfloor
+$$
 如abba
 ### 变成回文串的最小开销
 - bca ->bcacb / acbca        2

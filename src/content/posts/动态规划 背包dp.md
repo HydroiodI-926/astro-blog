@@ -3,6 +3,7 @@ title: 动态规划-背包dp
 published: 2026-07-28
 tags:
   - 动态规划
+  - 背包dp
 category: 算法笔记
 ---
 
