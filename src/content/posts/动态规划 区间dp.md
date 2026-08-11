@@ -18,9 +18,11 @@ description: 大范围的问题拆分成若干小范围的问题来求解
 -  aba   
 -  abba
 
-以上回文串解释了回文串的构成。当回文串的长度为奇数时，长度为1肯定是回文的，长度n大于1时，中心点为$n/2$（向下取整，下标从0开始）左右分布对应字符串对应相等如aba；当回文串为偶数时，长度为2时，左边起点定义为l，右边起点定义为r，l+1=r，长度大于2时，左边起点定义为l，右边起点定义为r，$$s[l+i]=s[r-i],\qquad
+以上回文串解释了回文串的构成。当回文串的长度为奇数时，长度为1肯定是回文的，长度n大于1时，中心点为$n/2$（向下取整，下标从0开始）左右分布对应字符串对应相等如aba；当回文串为偶数时，长度为2时，左边起点定义为l，右边起点定义为r，l+1=r，长度大于2时，左边起点定义为l，右边起点定义为r，
+$$s[l+i]=s[r-i],\qquad
 
-0\le i<\left\lfloor\frac{r-l+1}{2}\right\rfloor$$如abba
+0\le i<\left\lfloor\frac{r-l+1}{2}\right\rfloor$$
+如abba
 ### 变成回文串的最小开销
 - bca ->bcacb / acbca        2
 - bcab -> bcacb / bacab    1
@@ -149,3 +151,70 @@ dp[l][r]=\min(dp[l+1][r],dp[l][r-1])+1
 $$
 
 可以记成：**在右边插入左端字符，就解决原左端点；在左边插入右端字符，就解决原右端点。**
+
+## [486. 预测赢家](https://leetcode.cn/problems/predict-the-winner/)
+
+区间dp+博弈dp。因为每次拿取都是在端点上拿取，所以符合区间dp的特性，并且两个人不仅要让自己得到的分数最大，还要不让对方拿到更大的点数，因此不是盲目拿取最大的点数，存在博弈策略：在尽可能不让别人拿到更大的优势下选择更大的点数。暴力递归代码如下：
+```cpp
+int solve(int l,int r){
+	if(l==r){  // 只剩一个，别无选择 
+		return nums[l];
+	}
+	if(l+1==r){ // 只剩两个，局部贪心拿最大 
+		return max(nums[l],nums[r]);
+	}
+	/*
+	博弈核心：对方选取最有利的情况 就是自己最差的情况
+	已知当前的所有抉择中最差的情况中找相对更好的情况 
+	*/ 
+	return max( 
+		nums[l]+min(solve(l+2,r),solve(l+1,r-1)),
+		nums[r]+min(solve(l+1,r-1),solve(l,r-2))
+	);
+}
+```
+记忆化搜索解：
+```cpp
+bool predictTheWinner(vector<int>& nums) {
+	int n=nums.size(),sum=0;
+	for(int i=0;i<n;i++) sum+=nums[i];
+	vector<vector<int>> dp(n,vecctor<int>(n,-1));
+	auto mems = [&](auto&& self,int l,int r)->int{
+		if(dp[l][r]!=-1){
+			return dp[l][r];
+		}	
+		if(l==r) return nums[l];
+		if(l+1==r) return max(nums[l],nums[r]);
+		return max(
+			nums[l]+min(self(self,l+2,r),self(self,l+1,r-1)),
+			nums[r]+min(self(self,l+1,r-1),self(self,l,r-2))
+		);
+	};
+	int ans=mems(mems,0,n-1);
+	return ans>=sum-ans;     // p2=sum-p1得分   
+}
+```
+递推解
+```cpp
+bool predictTheWinner(vector<int>& nums) {
+	int n=nums.size(),sum=0;
+	for(int i=0;i<n;i++) sum+=nums[i];
+	vector<vector<int>> dp(n,vector<int>(n,-1));
+	// 由于要取到l+2，r-2这种数据，所以要预处理
+	for(int l=0;l<n;l++){
+		dp[l][l]=nums[l];
+	}
+	for(int r=1;r<n;r++){
+		dp[r-1][r]=max(nums[r-1],nums[r]);
+	}
+	for(int r=2;r<n;r++){
+		for(int l=r-2;l>=0;l--){ 
+			dp[l][r]=max(
+				nums[l]+min(dp[l+2][r],dp[l+1][r-1]),
+				nums[r]+min(dp[l+1][r-1],dp[l][r-2])
+			);
+		}
+	}
+	return dp[0][n-1]>=sum-dp[0][n-1];        
+}
+```
