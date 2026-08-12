@@ -92,4 +92,5 @@ export interface VocabularyTrackerProps {
 	entries: VocabularyEntry[];
 	batches: VocabularyBatch[];
 	meta: VocabularyMeta;
+	reviewUnlockToken?: string;
 }

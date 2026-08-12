@@ -2,6 +2,7 @@
 import Icon from "@iconify/svelte";
 import { onMount } from "svelte";
 import { recordVocabularyReview } from "@/utils/vocabulary-review-activity";
+import { verifyEncryptedPassword } from "@/utils/client-password-verifier";
 import {
 	applyMasteryChange,
 	clampMastery,
@@ -20,6 +21,7 @@ import type {
 
 const STORAGE_KEY = "english-vocabulary-progress:v2";
 const LEGACY_STORAGE_KEY = "english-vocabulary-progress:v1";
+const REVIEW_UNLOCK_STORAGE_KEY = "vocabulary-review-unlocked:v1";
 const statuses: Array<{
 	value: MasteryLevel;
 	label: string;
@@ -35,7 +37,7 @@ const legacyMastery: Record<string, number> = {
 	mastered: 9,
 };
 
-let { entries, batches, meta }: VocabularyTrackerProps = $props();
+let { entries, batches, meta, reviewUnlockToken }: VocabularyTrackerProps = $props();
 let progress = $state<Record<string, VocabularyProgressRecord>>({});
 let query = $state("");
 let statusFilter = $state<"all" | MasteryLevel>("all");
@@ -44,6 +46,10 @@ let reviewBatchFilter = $state<"all" | string>("all");
 let pageFilter = $state<"all" | number>("all");
 let storageReady = $state(false);
 let viewMode = $state<"list" | "review">("list");
+let reviewUnlocked = $state(!reviewUnlockToken);
+let reviewPassword = $state("");
+let reviewUnlockError = $state("");
+let reviewUnlocking = $state(false);
 let reviewCount = $state(10);
 let reviewEntryIds = $state<string[]>([]);
 let revealedMeanings = $state<Record<string, boolean>>({});
@@ -193,7 +199,12 @@ $effect(() => {
 	reviewFeedback = {};
 });
 
-onMount(() => {
+	onMount(() => {
+		if (reviewUnlockToken) {
+			reviewUnlocked =
+				window.sessionStorage.getItem(REVIEW_UNLOCK_STORAGE_KEY) ===
+				reviewUnlockToken;
+	}
 	try {
 		const saved = window.localStorage.getItem(STORAGE_KEY);
 		if (saved) {
@@ -244,6 +255,34 @@ onMount(() => {
 	}
 });
 
+async function unlockReview(event: SubmitEvent) {
+	event.preventDefault();
+	if (!reviewUnlockToken || reviewUnlocked || reviewUnlocking) return;
+	if (!reviewPassword.trim()) {
+		reviewUnlockError = "请输入复习密码";
+		return;
+	}
+	reviewUnlocking = true;
+	reviewUnlockError = "";
+	const verified = await verifyEncryptedPassword(
+		reviewUnlockToken,
+		reviewPassword,
+		"vocabulary-review-access",
+	);
+	reviewUnlocking = false;
+	if (!verified) {
+		reviewUnlockError = "密码错误，请重试";
+		return;
+	}
+	reviewUnlocked = true;
+	reviewPassword = "";
+	window.sessionStorage.setItem(REVIEW_UNLOCK_STORAGE_KEY, reviewUnlockToken);
+}
+
+function enterReviewMode() {
+	viewMode = "review";
+}
+
 function persistProgress(nextProgress: Record<string, VocabularyProgressRecord>) {
 	progress = nextProgress;
 	try {
@@ -262,6 +301,7 @@ function clearFilters() {
 }
 
 function drawReviewWords() {
+	if (!reviewUnlocked) return;
 	const now = Date.now();
 	const drawnEntryIds = weightedSampleWithoutReplacement(
 		reviewCandidates,
@@ -275,6 +315,7 @@ function drawReviewWords() {
 }
 
 function toggleMeaning(id: string) {
+	if (!reviewUnlocked) return;
 	revealedMeanings = {
 		...revealedMeanings,
 		[id]: !revealedMeanings[id],
@@ -282,6 +323,7 @@ function toggleMeaning(id: string) {
 }
 
 function setAllMeanings(revealed: boolean) {
+	if (!reviewUnlocked) return;
 	revealedMeanings = Object.fromEntries(
 		reviewEntries.map((entry) => [entry.id, revealed]),
 	);
@@ -291,7 +333,7 @@ function submitReviewFeedback(
 	entry: VocabularyEntry,
 	feedback: "forgot" | "partial" | "complete",
 ) {
-	if (reviewFeedback[entry.id]) return;
+	if (!reviewUnlocked || reviewFeedback[entry.id]) return;
 	const wordKey = getWordKey(entry.word);
 	const current = progress[wordKey] ?? { mastery: 0, lastReviewedAt: null };
 	const delta = feedback === "forgot" ? -1 : feedback === "partial" ? 1 : 3;
@@ -481,13 +523,14 @@ function formatUploadTime(uploadedAt: string) {
 			type="button"
 			class:active={viewMode === "review"}
 			aria-pressed={viewMode === "review"}
-			onclick={() => (viewMode = "review")}
+			onclick={enterReviewMode}
 		>
-			<Icon icon="material-symbols:style-outline-rounded" />
+			<Icon icon={reviewUnlocked ? "material-symbols:style-outline-rounded" : "material-symbols:lock-outline-rounded"} />
 			抽词复习
 		</button>
 	</div>
 
+	{#if viewMode === "list" || reviewUnlocked}
 	<div class="toolbar">
 		<label class="search-box">
 			<span class="sr-only">搜索单词或释义</span>
@@ -524,6 +567,7 @@ function formatUploadTime(uploadedAt: string) {
 			{/each}
 		</div>
 	</div>
+	{/if}
 
 	{#if viewMode === "list"}
 		<div class="result-heading">
@@ -595,7 +639,7 @@ function formatUploadTime(uploadedAt: string) {
 				<button type="button" onclick={clearFilters}>清空筛选</button>
 			</div>
 		{/if}
-	{:else}
+	{:else if reviewUnlocked}
 		<section class="review-panel" aria-labelledby="review-title">
 			<header class="review-heading">
 				<div>
@@ -717,6 +761,34 @@ function formatUploadTime(uploadedAt: string) {
 					<button type="button" onclick={clearFilters}>清空筛选</button>
 				</div>
 			{/if}
+		</section>
+	{:else}
+		<section class="review-lock" aria-labelledby="review-lock-title">
+			<div class="review-lock-icon"><Icon icon="material-symbols:lock-outline-rounded" /></div>
+			<div>
+				<span class="review-eyebrow">操作保护</span>
+				<h2 id="review-lock-title">抽词复习已锁定</h2>
+				<p>输入密码后才能抽词、揭晓答案和提交掌握度反馈。单词清单仍可正常浏览。</p>
+			</div>
+			<form onsubmit={unlockReview}>
+				<label for="review-password">复习密码</label>
+				<div class="review-password-row">
+					<input
+						id="review-password"
+						type="password"
+						autocomplete="current-password"
+						placeholder="请输入密码"
+						bind:value={reviewPassword}
+						disabled={reviewUnlocking}
+					/>
+					<button type="submit" disabled={reviewUnlocking}>
+						{reviewUnlocking ? "验证中…" : "解锁复习"}
+					</button>
+				</div>
+				{#if reviewUnlockError}
+					<p class="review-unlock-error" role="alert">{reviewUnlockError}</p>
+				{/if}
+			</form>
 		</section>
 	{/if}
 
@@ -1811,6 +1883,104 @@ function formatUploadTime(uploadedAt: string) {
 		gap: 1rem;
 	}
 
+	.review-lock {
+		display: grid;
+		grid-template-columns: auto minmax(0, 1fr);
+		align-items: start;
+		gap: 1rem;
+		padding: 1.25rem;
+		border: 1px solid color-mix(in oklch, var(--primary) 28%, var(--line-divider));
+		border-radius: 1rem;
+		background: linear-gradient(
+			135deg,
+			color-mix(in oklch, var(--card-bg) 88%, var(--primary) 12%),
+			var(--card-bg)
+		);
+	}
+
+	.review-lock-icon {
+		width: 2.8rem;
+		height: 2.8rem;
+		display: grid;
+		place-items: center;
+		border-radius: 0.8rem;
+		font-size: 1.35rem;
+		color: var(--primary);
+		background: color-mix(in oklch, var(--primary) 12%, transparent);
+	}
+
+	.review-lock h2,
+	.review-lock p {
+		margin: 0;
+	}
+
+	.review-lock h2 {
+		margin-top: 0.18rem;
+		font-size: 1.25rem;
+	}
+
+	.review-lock > div > p {
+		margin-top: 0.35rem;
+		font-size: 0.78rem;
+		line-height: 1.65;
+		color: color-mix(in oklch, currentColor 52%, transparent);
+	}
+
+	.review-lock form {
+		grid-column: 2;
+		display: grid;
+		gap: 0.4rem;
+	}
+
+	.review-lock form > label {
+		font-size: 0.7rem;
+		font-weight: 700;
+		color: color-mix(in oklch, currentColor 58%, transparent);
+	}
+
+	.review-password-row {
+		display: flex;
+		gap: 0.55rem;
+	}
+
+	.review-password-row input {
+		min-width: 0;
+		flex: 1;
+		padding: 0.68rem 0.75rem;
+		border: 1px solid var(--line-divider);
+		border-radius: 0.7rem;
+		outline: 0;
+		font: inherit;
+		color: inherit;
+		background: var(--card-bg);
+	}
+
+	.review-password-row input:focus {
+		border-color: var(--primary);
+	}
+
+	.review-password-row button {
+		padding: 0.68rem 0.9rem;
+		border: 0;
+		border-radius: 0.7rem;
+		font: inherit;
+		font-size: 0.75rem;
+		font-weight: 700;
+		color: white;
+		background: var(--primary);
+		cursor: pointer;
+	}
+
+	.review-password-row button:disabled,
+	.review-password-row input:disabled {
+		opacity: 0.6;
+	}
+
+	.review-unlock-error {
+		font-size: 0.7rem;
+		color: oklch(0.58 0.19 25);
+	}
+
 	.review-heading {
 		display: flex;
 		align-items: stretch;
@@ -2204,6 +2374,18 @@ function formatUploadTime(uploadedAt: string) {
 
 		.select-box select {
 			flex: 1;
+		}
+
+		.review-lock {
+			grid-template-columns: 1fr;
+		}
+
+		.review-lock-icon {
+			display: none;
+		}
+
+		.review-lock form {
+			grid-column: 1;
 		}
 
 		.page-filter button {
