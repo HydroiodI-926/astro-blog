@@ -2,43 +2,58 @@
 import Icon from "@iconify/svelte";
 import { onMount } from "svelte";
 import { recordVocabularyReview } from "@/utils/vocabulary-review-activity";
+import {
+	applyMasteryChange,
+	clampMastery,
+	getMasteryLevel,
+	getReviewPriority,
+	weightedSampleWithoutReplacement,
+} from "@/utils/vocabulary-mastery";
 import type {
-	LearningStatus,
+	MasteryLevel,
 	VocabularyEntry,
+	VocabularyProgressRecord,
 	VocabularyRelationLink,
 	VocabularyTrackerProps,
+	VocabularyWordRelations,
 } from "./types";
 
-const STORAGE_KEY = "english-vocabulary-progress:v1";
+const STORAGE_KEY = "english-vocabulary-progress:v2";
+const LEGACY_STORAGE_KEY = "english-vocabulary-progress:v1";
 const statuses: Array<{
-	value: LearningStatus;
+	value: MasteryLevel;
 	label: string;
-	shortLabel: string;
 }> = [
-	{ value: "new", label: "未学习", shortLabel: "未学" },
-	{ value: "learning", label: "学习中", shortLabel: "学习中" },
-	{ value: "mastered", label: "已掌握", shortLabel: "掌握" },
+	{ value: "unfamiliar", label: "不太熟悉" },
+	{ value: "familiar", label: "熟悉" },
+	{ value: "mastered", label: "掌握" },
 ];
 
-let { entries, batches, meta, relationData }: VocabularyTrackerProps = $props();
-let progress = $state<Record<string, LearningStatus>>({});
+const legacyMastery: Record<string, number> = {
+	new: 0,
+	learning: 5,
+	mastered: 9,
+};
+
+let { entries, batches, meta }: VocabularyTrackerProps = $props();
+let progress = $state<Record<string, VocabularyProgressRecord>>({});
 let query = $state("");
-let statusFilter = $state<"all" | LearningStatus>("all");
+let statusFilter = $state<"all" | MasteryLevel>("all");
 let batchFilter = $state<"all" | string>("all");
+let reviewBatchFilter = $state<"all" | string>("all");
 let pageFilter = $state<"all" | number>("all");
 let storageReady = $state(false);
 let viewMode = $state<"list" | "review">("list");
 let reviewCount = $state(10);
 let reviewEntryIds = $state<string[]>([]);
 let revealedMeanings = $state<Record<string, boolean>>({});
+let reviewFeedback = $state<Record<string, "forgot" | "partial" | "complete">>({});
 let selectedEntry = $state<VocabularyEntry | null>(null);
+let selectedRelations = $state<VocabularyWordRelations | null>(null);
+let relationLoadState = $state<"idle" | "loading" | "ready" | "missing" | "error">("idle");
 let detailDialog = $state<HTMLDialogElement>();
-
-const selectedRelations = $derived(
-	selectedEntry
-		? relationData.words[selectedEntry.word.trim().toLocaleLowerCase()]
-		: undefined,
-);
+const relationCache = new Map<string, VocabularyWordRelations | null>();
+let relationRequestId = 0;
 
 const wordOccurrences = $derived.by(() => {
 	const counts = new Map<string, number>();
@@ -48,6 +63,16 @@ const wordOccurrences = $derived.by(() => {
 	}
 	return counts;
 });
+
+const activeBatchFilter = $derived(
+	viewMode === "review" ? reviewBatchFilter : batchFilter,
+);
+
+const selectedReviewBatch = $derived(
+	reviewBatchFilter === "all"
+		? undefined
+		: batches.find((batch) => batch.id === reviewBatchFilter),
+);
 
 const duplicateSummary = $derived.by(() => {
 	const duplicateCounts = [...wordOccurrences.values()].filter(
@@ -63,18 +88,29 @@ const duplicateSummary = $derived.by(() => {
 });
 
 const summary = $derived.by(() => {
-	let learning = 0;
+	let unfamiliar = 0;
+	let familiar = 0;
 	let mastered = 0;
+	const seenWords = new Set<string>();
+	let totalMastery = 0;
 	for (const entry of entries) {
-		const status = progress[entry.id] ?? "new";
-		if (status === "learning") learning += 1;
-		if (status === "mastered") mastered += 1;
+		const wordKey = getWordKey(entry.word);
+		if (seenWords.has(wordKey)) continue;
+		seenWords.add(wordKey);
+		const mastery = progress[wordKey]?.mastery ?? 0;
+		const level = getMasteryLevel(mastery);
+		if (level === "unfamiliar") unfamiliar += 1;
+		if (level === "familiar") familiar += 1;
+		if (level === "mastered") mastered += 1;
+		totalMastery += mastery;
 	}
 	return {
-		learning,
+		total: seenWords.size,
+		unfamiliar,
+		familiar,
 		mastered,
-		completion: entries.length
-			? Math.round((mastered / entries.length) * 100)
+		completion: seenWords.size
+			? Math.round((totalMastery / (seenWords.size * 10)) * 100)
 			: 0,
 	};
 });
@@ -82,13 +118,16 @@ const summary = $derived.by(() => {
 const filteredEntries = $derived.by(() => {
 	const normalizedQuery = query.trim().toLocaleLowerCase();
 	return entries.filter((entry) => {
-		const status = progress[entry.id] ?? "new";
+		const status = getMasteryLevel(
+			progress[getWordKey(entry.word)]?.mastery ?? 0,
+		);
 		const matchesQuery =
 			!normalizedQuery ||
 			entry.word.toLocaleLowerCase().includes(normalizedQuery) ||
 			entry.meaning.toLocaleLowerCase().includes(normalizedQuery);
 		const matchesStatus = statusFilter === "all" || status === statusFilter;
-		const matchesBatch = batchFilter === "all" || entry.batchId === batchFilter;
+		const matchesBatch =
+			activeBatchFilter === "all" || entry.batchId === activeBatchFilter;
 		const matchesPage = pageFilter === "all" || entry.page === pageFilter;
 		return matchesQuery && matchesStatus && matchesBatch && matchesPage;
 	});
@@ -99,7 +138,8 @@ const pageNumbers = $derived(
 		new Set(
 			entries
 				.filter(
-					(entry) => batchFilter === "all" || entry.batchId === batchFilter,
+					(entry) =>
+						activeBatchFilter === "all" || entry.batchId === activeBatchFilter,
 				)
 				.map((entry) => entry.page),
 		),
@@ -126,7 +166,7 @@ const reviewCandidates = $derived.by(() => {
 });
 
 const reviewScopeSignature = $derived(
-	`${query}\u0000${statusFilter}\u0000${batchFilter}\u0000${pageFilter}`,
+	`${query}\u0000${statusFilter}\u0000${reviewBatchFilter}\u0000${pageFilter}`,
 );
 
 const reviewEntries = $derived(
@@ -150,6 +190,7 @@ $effect(() => {
 	reviewScopeSignature;
 	reviewEntryIds = [];
 	revealedMeanings = {};
+	reviewFeedback = {};
 });
 
 onMount(() => {
@@ -157,24 +198,44 @@ onMount(() => {
 		const saved = window.localStorage.getItem(STORAGE_KEY);
 		if (saved) {
 			const parsed = JSON.parse(saved) as Record<string, unknown>;
-			const restored: Record<string, LearningStatus> = {};
-			for (const [savedId, savedStatus] of Object.entries(parsed)) {
-				if (
-					savedStatus !== "new" &&
-					savedStatus !== "learning" &&
-					savedStatus !== "mastered"
-				) {
-					continue;
-				}
-				const exactEntry = entries.find((entry) => entry.id === savedId);
-				const legacyEntry = entries.find((entry) =>
-					entry.id.endsWith(`:${savedId}`),
-				);
-				const targetEntry = exactEntry ?? legacyEntry;
-				if (targetEntry) restored[targetEntry.id] = savedStatus;
+			const restored: Record<string, VocabularyProgressRecord> = {};
+			for (const [wordKey, value] of Object.entries(parsed)) {
+				if (!value || typeof value !== "object") continue;
+				const record = value as Record<string, unknown>;
+				if (typeof record.mastery !== "number") continue;
+				restored[getWordKey(wordKey)] = {
+					mastery: clampMastery(record.mastery),
+					lastReviewedAt:
+						typeof record.lastReviewedAt === "string" &&
+						Number.isFinite(Date.parse(record.lastReviewedAt))
+							? record.lastReviewedAt
+							: null,
+				};
 			}
 			progress = restored;
-			window.localStorage.setItem(STORAGE_KEY, JSON.stringify(restored));
+		} else {
+			const legacySaved = window.localStorage.getItem(LEGACY_STORAGE_KEY);
+			if (legacySaved) {
+				const parsed = JSON.parse(legacySaved) as Record<string, unknown>;
+				const migrated: Record<string, VocabularyProgressRecord> = {};
+				for (const [savedId, savedStatus] of Object.entries(parsed)) {
+					if (typeof savedStatus !== "string") continue;
+					const mastery = legacyMastery[savedStatus];
+					if (mastery === undefined) continue;
+					const targetEntry =
+						entries.find((entry) => entry.id === savedId) ??
+						entries.find((entry) => entry.id.endsWith(`:${savedId}`));
+					if (!targetEntry) continue;
+					const wordKey = getWordKey(targetEntry.word);
+					const currentMastery = migrated[wordKey]?.mastery ?? 0;
+					migrated[wordKey] = {
+						mastery: Math.max(currentMastery, mastery),
+						lastReviewedAt: null,
+					};
+				}
+				progress = migrated;
+				window.localStorage.setItem(STORAGE_KEY, JSON.stringify(migrated));
+			}
 		}
 	} catch (error) {
 		console.warn("Failed to restore vocabulary progress", error);
@@ -183,10 +244,10 @@ onMount(() => {
 	}
 });
 
-function setStatus(id: string, status: LearningStatus) {
-	progress = { ...progress, [id]: status };
+function persistProgress(nextProgress: Record<string, VocabularyProgressRecord>) {
+	progress = nextProgress;
 	try {
-		window.localStorage.setItem(STORAGE_KEY, JSON.stringify(progress));
+		window.localStorage.setItem(STORAGE_KEY, JSON.stringify(nextProgress));
 	} catch (error) {
 		console.warn("Failed to save vocabulary progress", error);
 	}
@@ -196,23 +257,20 @@ function clearFilters() {
 	query = "";
 	statusFilter = "all";
 	batchFilter = "all";
+	reviewBatchFilter = "all";
 	pageFilter = "all";
 }
 
 function drawReviewWords() {
-	const candidates = [...reviewCandidates];
-	for (let index = candidates.length - 1; index > 0; index -= 1) {
-		const randomIndex = Math.floor(Math.random() * (index + 1));
-		[candidates[index], candidates[randomIndex]] = [
-			candidates[randomIndex],
-			candidates[index],
-		];
-	}
-	const drawnEntryIds = candidates
-		.slice(0, Math.min(reviewCount, candidates.length))
-		.map((entry) => entry.id);
+	const now = Date.now();
+	const drawnEntryIds = weightedSampleWithoutReplacement(
+		reviewCandidates,
+		Math.min(reviewCount, reviewCandidates.length),
+		(entry) => getReviewPriority(progress[getWordKey(entry.word)], now),
+	).map((entry) => entry.id);
 	reviewEntryIds = drawnEntryIds;
 	revealedMeanings = {};
+	reviewFeedback = {};
 	recordVocabularyReview(drawnEntryIds.length);
 }
 
@@ -229,8 +287,70 @@ function setAllMeanings(revealed: boolean) {
 	);
 }
 
-function openEntryDetails(entry: VocabularyEntry) {
+function submitReviewFeedback(
+	entry: VocabularyEntry,
+	feedback: "forgot" | "partial" | "complete",
+) {
+	if (reviewFeedback[entry.id]) return;
+	const wordKey = getWordKey(entry.word);
+	const current = progress[wordKey] ?? { mastery: 0, lastReviewedAt: null };
+	const delta = feedback === "forgot" ? -1 : feedback === "partial" ? 1 : 3;
+	persistProgress({
+		...progress,
+		[wordKey]: {
+			mastery: applyMasteryChange(current.mastery, delta),
+			lastReviewedAt: new Date().toISOString(),
+		},
+	});
+	reviewFeedback = { ...reviewFeedback, [entry.id]: feedback };
+}
+
+function getWordKey(word: string) {
+	return word.trim().toLocaleLowerCase();
+}
+
+async function loadRelations(entry: VocabularyEntry) {
+	const wordKey = getWordKey(entry.word);
+	const requestId = ++relationRequestId;
+	const cached = relationCache.get(wordKey);
+	if (cached !== undefined || relationCache.has(wordKey)) {
+		selectedRelations = cached ?? null;
+		relationLoadState = cached ? "ready" : "missing";
+		return;
+	}
+
+	selectedRelations = null;
+	relationLoadState = "loading";
+	try {
+		const response = await fetch(
+			`/api/vocabulary/${encodeURIComponent(wordKey)}/`,
+		);
+		if (requestId !== relationRequestId) return;
+		if (response.status === 404) {
+			relationCache.set(wordKey, null);
+			relationLoadState = "missing";
+			return;
+		}
+		if (!response.ok) throw new Error(`HTTP ${response.status}`);
+		const relations = (await response.json()) as VocabularyWordRelations;
+		if (requestId !== relationRequestId) return;
+		relationCache.set(wordKey, relations);
+		selectedRelations = relations;
+		relationLoadState = "ready";
+	} catch (error) {
+		if (requestId !== relationRequestId) return;
+		console.warn(`Failed to load relations for ${wordKey}`, error);
+		relationLoadState = "error";
+	}
+}
+
+function selectEntry(entry: VocabularyEntry) {
 	selectedEntry = entry;
+	void loadRelations(entry);
+}
+
+function openEntryDetails(entry: VocabularyEntry) {
+	selectEntry(entry);
 	detailDialog?.showModal();
 }
 
@@ -239,11 +359,24 @@ function openRelatedWord(relation: VocabularyRelationLink) {
 	const relatedEntry = relation.entryIds
 		.map((entryId) => entries.find((entry) => entry.id === entryId))
 		.find((entry): entry is VocabularyEntry => Boolean(entry));
-	if (relatedEntry) selectedEntry = relatedEntry;
+	if (relatedEntry) selectEntry(relatedEntry);
 }
 
 function closeEntryDetails() {
 	detailDialog?.close();
+}
+
+function handleDetailClosed() {
+	relationRequestId += 1;
+	selectedEntry = null;
+	selectedRelations = null;
+	relationLoadState = "idle";
+}
+
+function retryRelations() {
+	if (!selectedEntry) return;
+	relationCache.delete(getWordKey(selectedEntry.word));
+	void loadRelations(selectedEntry);
 }
 
 function closeDetailsFromBackdrop(event: MouseEvent) {
@@ -254,10 +387,6 @@ function closeDetailsFromKeyboard(event: KeyboardEvent) {
 	if (event.key !== "Escape") return;
 	event.preventDefault();
 	closeEntryDetails();
-}
-
-function setSelectedEntryStatus(status: LearningStatus) {
-	if (selectedEntry) setStatus(selectedEntry.id, status);
 }
 
 function getWordOccurrenceCount(word: string) {
@@ -282,27 +411,34 @@ function formatUploadTime(uploadedAt: string) {
 		<div class="summary-card">
 			<span class="summary-icon total"><Icon icon="material-symbols:dictionary-outline" /></span>
 			<div>
-				<strong>{entries.length}</strong>
-				<span>词表总数</span>
+				<strong>{summary.total}</strong>
+				<span>不同单词</span>
 			</div>
 		</div>
 		<div class="summary-card">
 			<span class="summary-icon learning"><Icon icon="material-symbols:local-fire-department-outline" /></span>
 			<div>
-				<strong>{summary.learning}</strong>
-				<span>正在学习</span>
+				<strong>{summary.unfamiliar}</strong>
+				<span>不太熟悉</span>
 			</div>
 		</div>
 		<div class="summary-card">
 			<span class="summary-icon mastered"><Icon icon="material-symbols:verified-outline" /></span>
 			<div>
+				<strong>{summary.familiar}</strong>
+				<span>熟悉</span>
+			</div>
+		</div>
+		<div class="summary-card">
+			<span class="summary-icon mastered"><Icon icon="material-symbols:workspace-premium-outline-rounded" /></span>
+			<div>
 				<strong>{summary.mastered}</strong>
-				<span>已经掌握</span>
+				<span>掌握</span>
 			</div>
 		</div>
 		<div class="summary-card progress-card">
 			<div class="progress-heading">
-				<span>掌握进度</span>
+				<span>平均掌握度</span>
 				<strong>{summary.completion}%</strong>
 			</div>
 			<div
@@ -326,7 +462,7 @@ function formatUploadTime(uploadedAt: string) {
 			{#if duplicateSummary.wordCount > 0}
 				检测到 {duplicateSummary.wordCount} 个重复单词（额外 {duplicateSummary.extraEntryCount} 条记录）。
 			{/if}
-			学习状态仅保存在当前浏览器，不会上传。
+			掌握度与最后复习时间仅保存在当前浏览器，并根据复习反馈自动更新。
 		</p>
 		<span class:ready={storageReady}>{storageReady ? "已读取本机进度" : "正在读取进度"}</span>
 	</div>
@@ -359,20 +495,22 @@ function formatUploadTime(uploadedAt: string) {
 			<input bind:value={query} type="search" placeholder="搜索单词或中文释义" />
 		</label>
 
-		<label class="select-box batch-select">
-			<span>上传批次</span>
-			<select bind:value={batchFilter} aria-label="按上传时间筛选">
-				<option value="all">全部批次</option>
-				{#each batches as batch}
-					<option value={batch.id}>{formatUploadTime(batch.uploadedAt)}</option>
-				{/each}
-			</select>
-		</label>
+		{#if viewMode === "list"}
+			<label class="select-box batch-select">
+				<span>上传批次</span>
+				<select bind:value={batchFilter} aria-label="按上传时间筛选">
+					<option value="all">全部批次</option>
+					{#each batches as batch}
+						<option value={batch.id}>{formatUploadTime(batch.uploadedAt)}</option>
+					{/each}
+				</select>
+			</label>
+		{/if}
 
 		<label class="select-box">
-			<span>状态</span>
+			<span>掌握等级</span>
 			<select bind:value={statusFilter} aria-label="按学习状态筛选">
-				<option value="all">全部状态</option>
+				<option value="all">全部等级</option>
 				{#each statuses as status}
 					<option value={status.value}>{status.label}</option>
 				{/each}
@@ -410,7 +548,8 @@ function formatUploadTime(uploadedAt: string) {
 
 						<div class="word-list">
 							{#each group.entries as entry (entry.id)}
-								{@const currentStatus = progress[entry.id] ?? "new"}
+								{@const currentMastery = progress[getWordKey(entry.word)]?.mastery ?? 0}
+								{@const currentStatus = getMasteryLevel(currentMastery)}
 								{@const occurrenceCount = getWordOccurrenceCount(entry.word)}
 								<article class:mastered={currentStatus === "mastered"} class="word-item">
 									<button
@@ -438,19 +577,9 @@ function formatUploadTime(uploadedAt: string) {
 										</div>
 										<Icon icon="material-symbols:chevron-right-rounded" />
 									</button>
-									<div class="status-control" aria-label={`${entry.word} 的学习状态`}>
-										{#each statuses as status}
-											<button
-												type="button"
-												class:active={currentStatus === status.value}
-												class={`status-${status.value}`}
-												aria-pressed={currentStatus === status.value}
-												title={status.label}
-												onclick={() => setStatus(entry.id, status.value)}
-											>
-												{status.shortLabel}
-											</button>
-										{/each}
+									<div class={`mastery-badge mastery-${currentStatus}`} title="掌握度只能通过抽词复习反馈更新">
+										<strong>{statuses.find((status) => status.value === currentStatus)?.label}</strong>
+										<span>{currentMastery}/10</span>
 									</div>
 								</article>
 							{/each}
@@ -475,6 +604,17 @@ function formatUploadTime(uploadedAt: string) {
 					<p>先根据英文回忆含义，再揭晓中文释义核对。</p>
 				</div>
 				<div class="review-draw-controls">
+					<label class="review-range-select">
+						<span>抽词范围</span>
+						<select bind:value={reviewBatchFilter} aria-label="按上传批次限制抽词范围">
+							<option value="all">全部上传批次</option>
+							{#each batches as batch}
+								<option value={batch.id}>
+									{formatUploadTime(batch.uploadedAt)} · {batch.title}（{batch.entryCount}）
+								</option>
+							{/each}
+						</select>
+					</label>
 					<label>
 						<span>抽取数量</span>
 						<select bind:value={reviewCount}>
@@ -498,7 +638,13 @@ function formatUploadTime(uploadedAt: string) {
 
 			<div class="review-scope">
 				<Icon icon="material-symbols:filter-alt-outline-rounded" />
-				当前筛选范围有 {reviewCandidates.length} 个不同单词；每轮不会重复抽到相同拼写。
+				{#if selectedReviewBatch}
+					当前限制为“{selectedReviewBatch.title}”（{formatUploadTime(selectedReviewBatch.uploadedAt)}），可抽取
+					{reviewCandidates.length} 个不同单词。
+				{:else}
+					当前使用全部上传批次，可抽取 {reviewCandidates.length} 个不同单词。
+				{/if}
+				系统会优先抽取掌握度较低、距离上次复习较久的单词；每轮不会重复相同拼写。
 			</div>
 
 			{#if reviewEntries.length}
@@ -512,6 +658,7 @@ function formatUploadTime(uploadedAt: string) {
 
 				<div class="review-grid">
 					{#each reviewEntries as entry, index (entry.id)}
+						{@const wordProgress = progress[getWordKey(entry.word)]}
 						<article class:revealed={revealedMeanings[entry.id]} class="review-card">
 							<div class="review-card-meta">
 								<span>#{index + 1}</span>
@@ -524,6 +671,17 @@ function formatUploadTime(uploadedAt: string) {
 								<div class="review-meaning" aria-live="polite">
 									<span>中文释义</span>
 									<p>{entry.meaning}</p>
+								</div>
+								<div class="review-feedback" aria-label={`${entry.word} 的复习结果`}>
+									{#if reviewFeedback[entry.id]}
+										<p role="status">
+											已记录，本词掌握度为 {wordProgress?.mastery ?? 0}/10
+										</p>
+									{:else}
+										<button class="feedback-forgot" type="button" onclick={() => submitReviewFeedback(entry, "forgot")}>忘记单词意思 <span>−1</span></button>
+										<button class="feedback-partial" type="button" onclick={() => submitReviewFeedback(entry, "partial")}>记得部分意思 <span>+1</span></button>
+										<button class="feedback-complete" type="button" onclick={() => submitReviewFeedback(entry, "complete")}>完全熟悉 <span>+3</span></button>
+									{/if}
 								</div>
 							{:else}
 								<div class="meaning-placeholder">
@@ -548,7 +706,7 @@ function formatUploadTime(uploadedAt: string) {
 				<div class="empty-state review-empty">
 					<Icon icon="material-symbols:style-outline-rounded" />
 					<h3>准备好开始本轮复习</h3>
-					<p>从当前筛选范围随机抽词，释义会默认隐藏。</p>
+					<p>系统会结合掌握度和最后复习时间抽词，释义默认隐藏。</p>
 					<button type="button" onclick={drawReviewWords}>开始抽取</button>
 				</div>
 			{:else}
@@ -568,10 +726,12 @@ function formatUploadTime(uploadedAt: string) {
 		aria-labelledby="word-detail-title"
 		onclick={closeDetailsFromBackdrop}
 		onkeydown={closeDetailsFromKeyboard}
-		onclose={() => (selectedEntry = null)}
+		onclose={handleDetailClosed}
 	>
 		{#if selectedEntry}
-			{@const detailStatus = progress[selectedEntry.id] ?? "new"}
+			{@const detailProgress = progress[getWordKey(selectedEntry.word)]}
+			{@const detailMastery = detailProgress?.mastery ?? 0}
+			{@const detailStatus = getMasteryLevel(detailMastery)}
 			{@const detailBatch = batches.find((batch) => batch.id === selectedEntry?.batchId)}
 			<div class="detail-surface">
 				<header class="detail-header">
@@ -613,7 +773,14 @@ function formatUploadTime(uploadedAt: string) {
 						<span class="relation-source">OEWN · Wiktextract</span>
 					</div>
 
-					{#if selectedRelations}
+					{#if relationLoadState === "loading"}
+						<p class="relation-empty" role="status">正在加载词源、同根词和同义词…</p>
+					{:else if relationLoadState === "error"}
+						<div class="relation-load-error" role="alert">
+							<p>词汇关系加载失败，请检查网络后重试。</p>
+							<button type="button" onclick={retryRelations}>重新加载</button>
+						</div>
+					{:else if selectedRelations}
 						{#if selectedRelations.roots.length > 0 || selectedRelations.etymology}
 							<details class="relation-group">
 								<summary>
@@ -723,25 +890,19 @@ function formatUploadTime(uploadedAt: string) {
 								{/if}
 							</div>
 						</details>
-					{:else}
+					{:else if relationLoadState === "missing"}
 						<p class="relation-empty">这个单词尚未生成词汇关系数据。</p>
 					{/if}
 				</section>
 
 				<footer class="detail-footer">
-					<span>学习状态</span>
-					<div class="status-control" aria-label={`${selectedEntry.word} 的详情学习状态`}>
-						{#each statuses as status}
-							<button
-								type="button"
-								class:active={detailStatus === status.value}
-								class={`status-${status.value}`}
-								aria-pressed={detailStatus === status.value}
-								onclick={() => setSelectedEntryStatus(status.value)}
-							>
-								{status.label}
-							</button>
-						{/each}
+					<div>
+						<span>掌握等级</span>
+						<strong>{statuses.find((status) => status.value === detailStatus)?.label} · {detailMastery}/10</strong>
+					</div>
+					<div>
+						<span>最后复习</span>
+						<strong>{detailProgress?.lastReviewedAt ? formatUploadTime(detailProgress.lastReviewedAt) : "尚未复习"}</strong>
 					</div>
 				</footer>
 			</div>
@@ -759,6 +920,10 @@ function formatUploadTime(uploadedAt: string) {
 		display: grid;
 		grid-template-columns: repeat(4, minmax(0, 1fr));
 		gap: 0.75rem;
+	}
+
+	.summary-grid .progress-card {
+		grid-column: 1 / -1;
 	}
 
 	.summary-card {
@@ -985,8 +1150,7 @@ function formatUploadTime(uploadedAt: string) {
 		min-width: 13.5rem;
 	}
 
-	.page-filter,
-	.status-control {
+	.page-filter {
 		display: flex;
 		padding: 0.2rem;
 		border-radius: 0.7rem;
@@ -994,7 +1158,6 @@ function formatUploadTime(uploadedAt: string) {
 	}
 
 	.page-filter button,
-	.status-control button,
 	.empty-state button {
 		border: 0;
 		font: inherit;
@@ -1220,31 +1383,38 @@ function formatUploadTime(uploadedAt: string) {
 		color: color-mix(in oklch, currentColor 72%, transparent);
 	}
 
-	.status-control {
+	.mastery-badge {
 		flex: none;
-	}
-
-	.status-control button {
-		padding: 0.48rem 0.58rem;
-		border-radius: 0.52rem;
+		min-width: 5.8rem;
+		display: grid;
+		gap: 0.12rem;
+		padding: 0.5rem 0.65rem;
+		border-radius: 0.65rem;
+		text-align: center;
 		font-size: 0.7rem;
+		background: var(--btn-regular-bg);
 	}
 
-	.status-control button:hover,
-	.status-control button.active {
-		background: var(--card-bg);
-		box-shadow: 0 1px 4px color-mix(in oklch, black 9%, transparent);
+	.mastery-badge strong,
+	.mastery-badge span {
+		display: block;
 	}
 
-	.status-control .status-new.active {
+	.mastery-badge span {
+		font-family: var(--font-jetbrains-mono), monospace;
+		font-size: 0.62rem;
+		opacity: 0.65;
+	}
+
+	.mastery-unfamiliar {
 		color: color-mix(in oklch, currentColor 62%, transparent);
 	}
 
-	.status-control .status-learning.active {
+	.mastery-familiar {
 		color: oklch(0.66 0.16 62);
 	}
 
-	.status-control .status-mastered.active {
+	.mastery-mastered {
 		color: oklch(0.6 0.15 155);
 	}
 
@@ -1426,6 +1596,35 @@ function formatUploadTime(uploadedAt: string) {
 		color: color-mix(in oklch, currentColor 42%, transparent);
 	}
 
+	.relation-load-error {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: 0.75rem;
+		padding: 0.75rem;
+		border: 1px solid color-mix(in oklch, oklch(0.62 0.2 25) 28%, transparent);
+		border-radius: 0.8rem;
+		background: color-mix(in oklch, oklch(0.62 0.2 25) 8%, var(--card-bg));
+	}
+
+	.relation-load-error p {
+		margin: 0;
+		font-size: 0.7rem;
+		line-height: 1.55;
+	}
+
+	.relation-load-error button {
+		flex: none;
+		padding: 0.38rem 0.65rem;
+		border: 0;
+		border-radius: 999px;
+		color: var(--primary);
+		background: var(--btn-regular-bg);
+		font-size: 0.68rem;
+		font-weight: 700;
+		cursor: pointer;
+	}
+
 	.relation-group {
 		border: 1px solid var(--line-divider);
 		border-radius: 0.8rem;
@@ -1583,17 +1782,28 @@ function formatUploadTime(uploadedAt: string) {
 	}
 
 	.detail-footer {
-		display: flex;
-		align-items: center;
-		justify-content: space-between;
+		display: grid;
+		grid-template-columns: repeat(2, minmax(0, 1fr));
 		gap: 0.75rem;
 		padding-top: 0.9rem;
 		border-top: 1px solid var(--line-divider);
 	}
 
-	.detail-footer > span {
+	.detail-footer > div {
+		display: grid;
+		gap: 0.25rem;
+		padding: 0.65rem 0.75rem;
+		border-radius: 0.7rem;
+		background: var(--btn-regular-bg);
+	}
+
+	.detail-footer span {
 		font-size: 0.72rem;
 		color: color-mix(in oklch, currentColor 48%, transparent);
+	}
+
+	.detail-footer strong {
+		font-size: 0.78rem;
 	}
 
 	.review-panel {
@@ -1603,8 +1813,8 @@ function formatUploadTime(uploadedAt: string) {
 
 	.review-heading {
 		display: flex;
-		align-items: flex-end;
-		justify-content: space-between;
+		align-items: stretch;
+		flex-direction: column;
 		gap: 1rem;
 		padding: 1.25rem;
 		border: 1px solid color-mix(in oklch, var(--primary) 28%, var(--line-divider));
@@ -1650,8 +1860,20 @@ function formatUploadTime(uploadedAt: string) {
 	}
 
 	.review-draw-controls {
+		justify-content: flex-start;
+		flex-wrap: wrap;
 		gap: 0.6rem;
-		flex: none;
+		width: 100%;
+	}
+
+	.review-range-select {
+		max-width: min(25rem, 44vw);
+	}
+
+	.review-range-select select {
+		min-width: 0;
+		max-width: 18rem;
+		text-overflow: ellipsis;
 	}
 
 	.review-draw-controls label {
@@ -1815,6 +2037,59 @@ function formatUploadTime(uploadedAt: string) {
 		color: color-mix(in oklch, currentColor 72%, transparent);
 	}
 
+	.review-feedback {
+		display: grid;
+		grid-template-columns: repeat(3, minmax(0, 1fr));
+		gap: 0.4rem;
+		margin-top: 0.55rem;
+	}
+
+	.review-feedback button {
+		min-width: 0;
+		display: grid;
+		place-items: center;
+		gap: 0.12rem;
+		padding: 0.5rem 0.35rem;
+		border: 1px solid transparent;
+		border-radius: 0.6rem;
+		font: inherit;
+		font-size: 0.66rem;
+		line-height: 1.35;
+		cursor: pointer;
+	}
+
+	.review-feedback button span {
+		font-family: var(--font-jetbrains-mono), monospace;
+		font-weight: 700;
+	}
+
+	.feedback-forgot {
+		color: oklch(0.58 0.19 25);
+		background: oklch(0.65 0.16 25 / 0.09);
+	}
+
+	.feedback-partial {
+		color: oklch(0.58 0.15 72);
+		background: oklch(0.7 0.13 72 / 0.1);
+	}
+
+	.feedback-complete {
+		color: oklch(0.55 0.15 155);
+		background: oklch(0.68 0.13 155 / 0.1);
+	}
+
+	.review-feedback > p {
+		grid-column: 1 / -1;
+		margin: 0;
+		padding: 0.55rem;
+		border-radius: 0.6rem;
+		text-align: center;
+		font-size: 0.7rem;
+		font-weight: 700;
+		color: var(--primary);
+		background: color-mix(in oklch, var(--primary) 10%, transparent);
+	}
+
 	.meaning-placeholder {
 		display: grid;
 		place-items: center;
@@ -1962,21 +2237,18 @@ function formatUploadTime(uploadedAt: string) {
 			height: 2.75rem;
 		}
 
-		.status-control {
+		.mastery-badge {
 			width: 100%;
 		}
 
-		.status-control button {
+		.review-draw-controls .review-range-select {
+			max-width: none;
+			flex-basis: 100%;
+		}
+
+		.review-range-select select {
+			max-width: none;
 			flex: 1;
-		}
-
-		.review-heading {
-			align-items: stretch;
-			flex-direction: column;
-		}
-
-		.review-draw-controls {
-			width: 100%;
 		}
 
 		.review-draw-controls label,
@@ -1993,8 +2265,7 @@ function formatUploadTime(uploadedAt: string) {
 		}
 
 		.detail-footer {
-			align-items: stretch;
-			flex-direction: column;
+			grid-template-columns: 1fr;
 		}
 	}
 

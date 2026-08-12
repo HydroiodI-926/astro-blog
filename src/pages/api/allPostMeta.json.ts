@@ -17,6 +17,9 @@ export async function GET() {
 		.sort((a, b) => b.published - a.published);
 
 	return new Response(JSON.stringify(allPostsData), {
-		headers: { "Content-Type": "application/json" },
+		headers: {
+			"Content-Type": "application/json",
+			"X-Robots-Tag": "noindex, nofollow",
+		},
 	});
 }

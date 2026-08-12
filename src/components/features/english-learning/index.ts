@@ -1,9 +1,10 @@
 export type {
-	LearningStatus,
+	MasteryLevel,
 	VocabularyBatch,
 	VocabularyEntry,
 	VocabularyFamilyLink,
 	VocabularyMeta,
+	VocabularyProgressRecord,
 	VocabularyRelationData,
 	VocabularyRelationLink,
 	VocabularySameRootLink,

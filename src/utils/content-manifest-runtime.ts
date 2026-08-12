@@ -16,6 +16,7 @@ export function jsonManifestResponse(payload: unknown): Response {
 		headers: {
 			"Content-Type": "application/json; charset=utf-8",
 			"Cache-Control": "public, max-age=300, must-revalidate",
+			"X-Robots-Tag": "noindex, nofollow",
 		},
 	});
 }

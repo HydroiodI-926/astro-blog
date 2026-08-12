@@ -6,7 +6,7 @@
     "sync-content": "node scripts/sync-content.js",
     "manifest": "node scripts/generate-content-manifest.mjs",
     "test:manifest": "node --test tests/content-manifest.test.mjs",
-    "test:vocabulary": "node --test tests/vocabulary-data.test.mjs tests/vocabulary-relations.test.mjs",
+		"test:vocabulary": "node --test tests/vocabulary-data.test.mjs tests/vocabulary-relations.test.mjs tests/vocabulary-mastery.test.mjs",
     "init-content": "node scripts/init-content-repo.js",
     "predev": "node scripts/sync-content.js || true",
     "prebuild": "node scripts/sync-content.js || true",

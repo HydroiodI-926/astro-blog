@@ -26,6 +26,24 @@
 			]
 		},
 		{
+			"source": "/api/(.*)",
+			"headers": [
+				{
+					"key": "X-Robots-Tag",
+					"value": "noindex, nofollow"
+				}
+			]
+		},
+		{
+			"source": "/content-manifest/(.*)",
+			"headers": [
+				{
+					"key": "X-Robots-Tag",
+					"value": "noindex, nofollow"
+				}
+			]
+		},
+		{
 			"source": "/pio/live2d-host",
 			"headers": [
 				{

@@ -1,15 +1,9 @@
 ---
-import {
-	type VocabularyRelationData,
-	VocabularyTracker,
-} from "@components/features/english-learning";
+import { VocabularyTracker } from "@components/features/english-learning";
 import { PageHeader } from "@components/features/page-header";
 import MainGridLayout from "@layouts/MainGridLayout.astro";
 
 import vocabularyData from "../data/vocabulary.json";
-import vocabularyRelationData from "../data/vocabulary-relations.json";
-
-const relationData = vocabularyRelationData as VocabularyRelationData;
 
 const title = "英语学习";
 const subtitle = "从单词开始，留下每一次学习和掌握的进度。";
@@ -33,7 +27,6 @@ const subtitle = "从单词开始，留下每一次学习和掌握的进度。";
 				entries={vocabularyData.entries}
 				batches={vocabularyData.batches}
 				meta={vocabularyData.meta}
-				relationData={relationData}
 			/>
 		</div>
 	</div>

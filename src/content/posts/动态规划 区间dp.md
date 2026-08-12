@@ -8,8 +8,8 @@ category: 算法笔记
 description: 大范围的问题拆分成若干小范围的问题来求解
 ---
 可能性展开的常见方式
-1. 基于两侧端点讨论的可能性展开
-2. 基于范围上划分点的可能性展开
+1. 基于两侧端点讨论的可能性展开： 例题1 2
+2. 基于范围上划分点的可能性展开： 例题3
 
 # 例题
 ## [1312. 让字符串成为回文串的最少插入次数](https://leetcode.cn/problems/minimum-insertion-steps-to-make-a-string-palindrome/)
@@ -219,5 +219,29 @@ bool predictTheWinner(vector<int>& nums) {
 		}
 	}
 	return dp[0][n-1]>=sum-dp[0][n-1];        
+}
+```
+
+## [1039. 多边形三角剖分的最低得分](https://leetcode.cn/problems/minimum-score-triangulation-of-polygon/)
+一个封闭多边形以任意顶点到其他任意顶点的直线（即分割线）有n-1条，其中能构成三角形的只有n-3条将图形分成n-2个三角形，并且不能相交，那么分割线就是可枚举的，每划出一条分割线将整个图形分成了两个部分，三个状态：分割线左边部分、当前l，i，r组成的三角形的值、分割线右边部分，很明显的重叠子问题，状态转移见代码
+#### 记忆化搜索解
+```cpp
+int minScoreTriangulation(vector<int>& values) {
+    int n=values.size();
+	vector<vector<int>> dp(n,vector<int>(n,-1));
+	auto mems = [&](auto&& self,int l,int r)->int{
+		if(dp[l][r]!=-1) return dp[l][r];
+		if(l==r||l+1==r) return 0;
+		int ans=MAXN;
+		for(int i=l+1;i<r;i++){
+			ans=min(
+				ans,
+				self(self,l,i)+self(self,i,r)+values[l]*values[i]*values[r]
+			);
+		}
+		dp[l][r]=ans;
+		return ans;
+	};
+	return mems(mems,0,n-1);
 }
 ```

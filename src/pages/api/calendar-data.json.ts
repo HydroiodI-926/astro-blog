@@ -19,6 +19,7 @@ export async function GET() {
 	return new Response(JSON.stringify(allPostsData), {
 		headers: {
 			"Content-Type": "application/json",
+			"X-Robots-Tag": "noindex, nofollow",
 		},
 	});
 }

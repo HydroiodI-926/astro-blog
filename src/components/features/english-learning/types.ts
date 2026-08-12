@@ -1,4 +1,9 @@
-export type LearningStatus = "new" | "learning" | "mastered";
+export type MasteryLevel = "unfamiliar" | "familiar" | "mastered";
+
+export interface VocabularyProgressRecord {
+	mastery: number;
+	lastReviewedAt: string | null;
+}
 
 export interface VocabularyEntry {
 	id: string;
@@ -87,5 +92,4 @@ export interface VocabularyTrackerProps {
 	entries: VocabularyEntry[];
 	batches: VocabularyBatch[];
 	meta: VocabularyMeta;
-	relationData: VocabularyRelationData;
 }
