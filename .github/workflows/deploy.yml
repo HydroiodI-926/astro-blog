@@ -15,8 +15,18 @@ jobs:
     steps:
       - name: Checkout your repository using git
         uses: actions/checkout@v4
+      - name: Verify vocabulary review password
+        env:
+          VOCABULARY_REVIEW_PASSWORD: ${{ secrets.VOCABULARY_REVIEW_PASSWORD }}
+        run: |
+          if [ -z "$VOCABULARY_REVIEW_PASSWORD" ]; then
+            echo "::error::Missing repository secret VOCABULARY_REVIEW_PASSWORD"
+            exit 1
+          fi
       - name: Install, build, and upload your site
         uses: withastro/action@v3
+        env:
+          VOCABULARY_REVIEW_PASSWORD: ${{ secrets.VOCABULARY_REVIEW_PASSWORD }}
         with:
           node-version: 22
   deploy:

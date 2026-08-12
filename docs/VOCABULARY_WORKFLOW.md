@@ -76,6 +76,8 @@ pnpm enrich:vocabulary
 VOCABULARY_REVIEW_PASSWORD=请替换为足够长的密码
 ```
 
+GitHub Pages 部署不会上传本地 `.env`。请进入仓库的 **Settings → Secrets and variables → Actions → New repository secret**，创建名为 `VOCABULARY_REVIEW_PASSWORD` 的 Repository secret，然后重新运行部署工作流。`.github/workflows/deploy.yml` 会将该 Secret 注入 Astro 构建；如果未配置，部署会直接失败，避免意外发布未上锁版本。
+
 - 重新构建后，“抽词复习”会要求先输入密码；单词清单仍可正常浏览。
 - 密码只在构建时用于生成 AES-256-GCM 校验令牌，不会以明文注入网页；解锁状态仅保留在当前标签页会话，关闭标签页后需要重新输入。
 - 更换密码后重新部署，旧会话会自动失效。
