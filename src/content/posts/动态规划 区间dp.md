@@ -245,3 +245,32 @@ int minScoreTriangulation(vector<int>& values) {
 	return mems(mems,0,n-1);
 }
 ```
+### [P1775 石子合并（弱化版） - 洛谷](https://www.luogu.com.cn/problem/P1775)
+区间dp+前缀和
+```cpp
+```cpp
+int n;
+
+void solve(){
+	cin>>n;
+	vector<int> a(n+1,0);
+	for(int i=1;i<=n;i++){
+		cin>>a[i];
+		a[i]+=a[i-1];
+	}
+	vector<vector<int>> dp(n+1,vector<int>(n+1,MAXN));
+	for(int r=1;r<=n;r++){
+		for(int l=r;l>=1;l--){
+			if(l==r) dp[l][r]=0;
+			else{
+				for(int k=l;k<r;k++){
+					dp[l][r]=min(dp[l][r],dp[l][k]+dp[k+1][r]);
+				}
+				dp[l][r]+=a[r]-a[l-1];
+			}
+		}
+	}
+	cout<<dp[1][n];
+}
+```
+```

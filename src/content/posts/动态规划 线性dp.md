@@ -270,6 +270,7 @@ void solve(){
 
 # 环状序列模型
 ### [918. 环形子数组的最大和](https://leetcode.cn/problems/maximum-sum-circular-subarray/)
+[P2642 最大双子段和 - 洛谷](https://www.luogu.com.cn/problem/P2642)
 逻辑上数组首尾相连，实际上，答案有两种情况，一种是连续不断的子数组，另一种是中间有一段中断的“两个子数组”，后者就是整个数组和-最小子数组的情况，跑两次比较大小即可
 当然，后者的这个算法有一个问题，就是如果整个数组都为正数或者都为负数，那么最大子数组=最小子数组=数组之和，那么这个算法算出来等于0，如果是都为负数的情况，题目要求子数组>=1那么就会出问题，需要特判
 ```cpp
@@ -304,8 +305,110 @@ int maxSubarraySumCircular(vector<int>& nums) {
 }
 ```
 
+### [P1121 环状最大两段子段和 - 洛谷](https://www.luogu.com.cn/problem/P1121)
+转换为区间的暴力解
+```cpp
+int n;
+void solve(){
+	cin>>n;
+	vector<int> a(2*n);
+	for(int i=0;i<n;i++){
+		cin>>a[i];
+		a[n+i]=a[i];
+	}
+	vector<vector<ll>> dp(2*n,vector<ll>(2*n,-MAXN));
+	for(int l=0,r=n;r<=2*n;l++,r++){
+		for(int i=l;i<r;i++){
+			if(i==l) dp[l][i]=a[l];
+			else{
+				if(dp[l][i-1]>0){
+					dp[l][i]=a[i]+dp[l][i-1];
+				}
+				else{
+					dp[l][i]=a[i];
+				}
+			}
+		}
+	}
+	ll ans=-MAXN;
+	for(int l=0;l<n;l++){
+		for(int k=l;k<l+n-1;k++){
+			for(int r=k+1;r<=n+l-1&&r<2*n;r++){
+				ans=max(ans,dp[l][k]+dp[k+2][r]);
+			}
+		}
+	}
+	cout<<ans;
+}
+
+```
+可以转换为求一段一段序列中两段最大和的和与一段序列中总和减去两端最小的差作比较：
+
+000 A 000 B 000   → 直接找两个 A/B 最大
+A 000 B 000 A     → 总和减掉两个 000 最小
+
+答案如下：
+```cpp
+int n;
+void solve(){
+	cin>>n;
+	vector<int> a(n);
+	ll sum=0;
+	for(int i=0;i<n;i++){
+		cin>>a[i];
+		sum+=a[i];
+	}
+	vector<ll> dp(n,0),lb(n,0),rb(n,0);
+	dp[0]=lb[0]=a[0];
+	for(int i=1;i<n;i++){
+		if(dp[i-1]>0){
+			dp[i]=a[i]+dp[i-1];
+		}
+		else dp[i]=a[i];
+		lb[i]=max(lb[i-1],dp[i]);
+	}
+	dp[n-1]=rb[n-1]=a[n-1];
+	for(int i=n-2;i>=0;i--){
+		if(dp[i+1]>0){
+			dp[i]=a[i]+dp[i+1];
+		}
+		else dp[i]=a[i];
+		rb[i]=max(dp[i],rb[i+1]);
+	}
+	ll ans1=-MAXN,ans2=MAXN;
+	for(int i=0;i<n-1;i++){
+		ans1=max(ans1,lb[i]+rb[i+1]);
+	}
+	dp[0]=lb[0]=a[0];
+	for(int i=1;i<n;i++){
+		if(dp[i-1]<0){
+			dp[i]=a[i]+dp[i-1];
+		}
+		else dp[i]=a[i];
+		lb[i]=min(lb[i-1],dp[i]);
+	}
+	if(lb[n-1]==sum){
+		cout<<ans1;
+		return;
+	}
+	dp[n-1]=rb[n-1]=a[n-1];
+	for(int i=n-2;i>=0;i--){
+		if(dp[i+1]<0){
+			dp[i]=dp[i+1]+a[i];
+		}
+		else dp[i]=a[i];
+		rb[i]=min(dp[i],rb[i+1]);
+	}
+	for(int i=0;i<n-1;i++){
+		ans2=min(ans2,lb[i]+rb[i]);
+	}
+	cout<<max(ans1,sum-ans2);
+}
+```
+
+
 # 进阶dp的优化
-[P9242 [蓝桥杯 2023 省 B] 接龙数列 - 洛谷](https://www.luogu.com.cn/problem/P9242)
+### [P9242 [蓝桥杯 2023 省 B] 接龙数列 - 洛谷](https://www.luogu.com.cn/problem/P9242)
 仔细分析和求最长上升子序列差不多，LIS的做法是判断dp\[i]的尾和dp\[j]的头是否相等，如果相等，使用LIS的状态转移方程持续更新dp，但是数据量更大，o($n^2$)会tle，所以需要一定的优化，这里换一种遍历和dp的存储方式（同时也更改了状态转移方程）为什么会超时，就是因为dp存了大量的数据，然后更新dp的时候计算量大，导致超时，这种题注意到以i为尾的更新方式只有10中，如果我的dp表也只记录十种，那么不就大大减少计算量了吗
 ```cpp
 int n;
@@ -328,5 +431,4 @@ void solve() {
     cout<<n-ans; // 最后，要求的是最少修改量，因此总数减掉最长的情况即可
 }
 ```
-
 

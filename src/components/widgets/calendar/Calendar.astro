@@ -1,6 +1,5 @@
 ---
 import { siteConfig } from "../../../config";
-import vocabularyData from "../../../data/vocabulary.json";
 import I18nKey from "../../../i18n/i18nKey";
 import { i18n } from "../../../i18n/translation";
 import WidgetLayout from "../common/WidgetLayout.astro";
@@ -40,12 +39,6 @@ const weekDays = [
 
 const isChinese = siteConfig.lang.startsWith("zh");
 const yearSuffix = isChinese ? "年" : " ";
-const vocabularyBatches = vocabularyData.batches.map((batch) => ({
-	id: batch.id,
-	title: batch.title,
-	uploadedAt: batch.uploadedAt,
-	entryCount: batch.entryCount,
-}));
 ---
 
 <WidgetLayout
@@ -58,6 +51,5 @@ const vocabularyBatches = vocabularyData.batches.map((batch) => ({
 		{monthNames}
 		{weekDays}
 		{yearSuffix}
-		{vocabularyBatches}
 	/>
 </WidgetLayout>

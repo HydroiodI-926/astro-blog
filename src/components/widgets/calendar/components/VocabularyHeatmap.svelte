@@ -1,37 +1,20 @@
 <script lang="ts">
-import { onMount } from "svelte";
-import {
-	getShanghaiDateKey,
-	readVocabularyReviewActivity,
-	VOCABULARY_REVIEW_EVENT,
-	VOCABULARY_REVIEW_STORAGE_KEY,
-	type VocabularyReviewActivity,
-} from "@/utils/vocabulary-review-activity";
-
-interface VocabularyUploadBatch {
-	id: string;
-	title: string;
-	uploadedAt: string;
-	entryCount: number;
-}
+import type { CalendarPost } from "../types/calendar";
 
 interface Props {
-	batches: VocabularyUploadBatch[];
+	posts: CalendarPost[];
 }
 
 interface HeatmapCell {
 	dateKey: string;
 	label: string;
-	batchCount: number;
-	wordCount: number;
-	reviewRoundCount: number;
-	reviewWordCount: number;
+	publishedCount: number;
+	updatedCount: number;
 	level: number;
 	isFuture: boolean;
 }
 
-const { batches }: Props = $props();
-let reviewActivity = $state<VocabularyReviewActivity>({});
+const { posts }: Props = $props();
 
 function addUtcDays(date: Date, days: number) {
 	const result = new Date(date);
@@ -39,23 +22,44 @@ function addUtcDays(date: Date, days: number) {
 	return result;
 }
 
-function getHeatLevel(wordCount: number) {
-	if (wordCount === 0) return 0;
-	if (wordCount <= 40) return 1;
-	if (wordCount <= 80) return 2;
-	if (wordCount <= 120) return 3;
+function getShanghaiDateKey() {
+	return new Intl.DateTimeFormat("en-CA", {
+		timeZone: "Asia/Shanghai",
+		year: "numeric",
+		month: "2-digit",
+		day: "2-digit",
+	}).format(new Date());
+}
+
+function getHeatLevel(activityCount: number) {
+	if (activityCount === 0) return 0;
+	if (activityCount === 1) return 1;
+	if (activityCount === 2) return 2;
+	if (activityCount === 3) return 3;
 	return 4;
 }
 
-const uploadStatsByDate = $derived.by(() => {
-	const stats = new Map<string, { batchCount: number; wordCount: number }>();
-	for (const batch of batches) {
-		const dateKey = getShanghaiDateKey(batch.uploadedAt);
-		const current = stats.get(dateKey) ?? { batchCount: 0, wordCount: 0 };
-		stats.set(dateKey, {
-			batchCount: current.batchCount + 1,
-			wordCount: current.wordCount + batch.entryCount,
-		});
+const activityStatsByDate = $derived.by(() => {
+	const stats = new Map<
+		string,
+		{ publishedCount: number; updatedCount: number }
+	>();
+	for (const post of posts) {
+		const publishedStats = stats.get(post.date) ?? {
+			publishedCount: 0,
+			updatedCount: 0,
+		};
+		publishedStats.publishedCount += 1;
+		stats.set(post.date, publishedStats);
+
+		if (post.updated) {
+			const updatedStats = stats.get(post.updated) ?? {
+				publishedCount: 0,
+				updatedCount: 0,
+			};
+			updatedStats.updatedCount += 1;
+			stats.set(post.updated, updatedStats);
+		}
 	}
 	return stats;
 });
@@ -74,23 +78,17 @@ const heatmapCells = $derived.by(() => {
 	for (let day = 1; day <= daysInMonth; day += 1) {
 		const date = addUtcDays(firstDay, day - 1);
 		const dateKey = date.toISOString().slice(0, 10);
-		const stats = uploadStatsByDate.get(dateKey) ?? {
-			batchCount: 0,
-			wordCount: 0,
-		};
-		const review = reviewActivity[dateKey] ?? {
-			roundCount: 0,
-			wordCount: 0,
+		const stats = activityStatsByDate.get(dateKey) ?? {
+			publishedCount: 0,
+			updatedCount: 0,
 		};
 		const [, displayMonth, displayDay] = dateKey.split("-");
 		result.push({
 			dateKey,
 			label: `${Number(displayMonth)}月${Number(displayDay)}日`,
-			batchCount: stats.batchCount,
-			wordCount: stats.wordCount,
-			reviewRoundCount: review.roundCount,
-			reviewWordCount: review.wordCount,
-			level: getHeatLevel(stats.wordCount + review.wordCount),
+			publishedCount: stats.publishedCount,
+			updatedCount: stats.updatedCount,
+			level: getHeatLevel(stats.publishedCount + stats.updatedCount),
 			isFuture: dateKey > todayKey,
 		});
 	}
@@ -100,73 +98,49 @@ const heatmapCells = $derived.by(() => {
 });
 
 const monthLabel = $derived.by(() => {
-	const [year, month] = getShanghaiDateKey().split("-");
+	const todayKey = getShanghaiDateKey();
+	const [year, month] = todayKey.split("-");
 	return `${year}年${Number(month)}月`;
 });
 
 const monthTotals = $derived.by(() => {
-	let batchCount = 0;
-	let uploadWordCount = 0;
-	let reviewRoundCount = 0;
-	let reviewWordCount = 0;
+	let publishedCount = 0;
+	let updatedCount = 0;
 	for (const cell of heatmapCells) {
 		if (!cell) continue;
-		batchCount += cell.batchCount;
-		uploadWordCount += cell.wordCount;
-		reviewRoundCount += cell.reviewRoundCount;
-		reviewWordCount += cell.reviewWordCount;
+		publishedCount += cell.publishedCount;
+		updatedCount += cell.updatedCount;
 	}
-	return { batchCount, uploadWordCount, reviewRoundCount, reviewWordCount };
+	return { publishedCount, updatedCount };
 });
 
 function getCellTitle(cell: HeatmapCell) {
 	const activityParts: string[] = [];
-	if (cell.batchCount > 0) {
-		activityParts.push(
-			`上传 ${cell.batchCount} 份词表，${cell.wordCount} 个单词`,
-		);
+	if (cell.publishedCount > 0) {
+		activityParts.push(`发布 ${cell.publishedCount} 篇文章`);
 	}
-	if (cell.reviewRoundCount > 0) {
-		activityParts.push(
-			`复习 ${cell.reviewRoundCount} 轮，抽背 ${cell.reviewWordCount} 词次`,
-		);
+	if (cell.updatedCount > 0) {
+		activityParts.push(`更新 ${cell.updatedCount} 篇文章`);
 	}
-	return `${cell.label}：${activityParts.join("；") || "没有学习记录"}`;
+	return `${cell.label}：${activityParts.join("；") || "没有文章活动"}`;
 }
-
-onMount(() => {
-	const syncReviewActivity = () => {
-		reviewActivity = readVocabularyReviewActivity();
-	};
-	const syncReviewActivityFromStorage = (event: StorageEvent) => {
-		if (event.key === VOCABULARY_REVIEW_STORAGE_KEY) syncReviewActivity();
-	};
-	syncReviewActivity();
-	window.addEventListener(VOCABULARY_REVIEW_EVENT, syncReviewActivity);
-	window.addEventListener("storage", syncReviewActivityFromStorage);
-
-	return () => {
-		window.removeEventListener(VOCABULARY_REVIEW_EVENT, syncReviewActivity);
-		window.removeEventListener("storage", syncReviewActivityFromStorage);
-	};
-});
 </script>
 
-<section class="vocabulary-heatmap" aria-labelledby="vocabulary-heatmap-title">
+<section class="article-heatmap" aria-labelledby="article-heatmap-title">
 	<header class="heatmap-heading">
 		<div>
-			<h3 id="vocabulary-heatmap-title">背单词热度</h3>
-			<p>{monthLabel} · 上传 + 本机抽背</p>
+			<h3 id="article-heatmap-title">文章更新热度</h3>
+			<p>{monthLabel} · 发布 + 最新修改</p>
 		</div>
-		<a href="/english/" aria-label="打开英语单词清单">
-			上传 {monthTotals.uploadWordCount} · 抽背 {monthTotals.reviewWordCount}
+		<a href="/" aria-label="打开文章列表">
+			发布 {monthTotals.publishedCount} · 更新 {monthTotals.updatedCount}
 		</a>
 	</header>
 
 	<div
 		class="heatmap-chart"
 		role="img"
-		aria-label={`${monthLabel}词汇活动；上传 ${monthTotals.batchCount} 份词表、${monthTotals.uploadWordCount} 个单词，当前浏览器复习 ${monthTotals.reviewRoundCount} 轮、抽背 ${monthTotals.reviewWordCount} 词次`}
+		aria-label={`${monthLabel}文章活动；发布 ${monthTotals.publishedCount} 篇，更新 ${monthTotals.updatedCount} 篇`}
 	>
 		<div class="weekday-labels" aria-hidden="true">
 			<span>一</span><span>二</span><span>三</span><span>四</span><span>五</span><span>六</span><span>日</span>
@@ -197,7 +171,7 @@ onMount(() => {
 </section>
 
 <style>
-	.vocabulary-heatmap {
+	.article-heatmap {
 		display: grid;
 		gap: 0.75rem;
 		margin-top: 1rem;

@@ -13,7 +13,7 @@ function updateTodayDate() {
 
 import CalendarGrid from "./components/CalendarGrid.svelte";
 import MonthPicker from "./components/MonthPicker.svelte";
-import VocabularyHeatmap from "./components/VocabularyHeatmap.svelte";
+import ArticleHeatmap from "./components/VocabularyHeatmap.svelte";
 import YearPicker from "./components/YearPicker.svelte";
 import {
 	formatDateKey,
@@ -33,15 +33,9 @@ interface Props {
 	monthNames: string[];
 	weekDays: string[];
 	yearSuffix: string;
-	vocabularyBatches: Array<{
-		id: string;
-		title: string;
-		uploadedAt: string;
-		entryCount: number;
-	}>;
 }
 
-const { monthNames, weekDays, yearSuffix, vocabularyBatches }: Props = $props();
+const { monthNames, weekDays, yearSuffix }: Props = $props();
 
 // State
 let allPostsData: CalendarPost[] = $state([]);
@@ -346,7 +340,7 @@ onMount(() => {
 			</div>
 		</div>
 
-		<VocabularyHeatmap batches={vocabularyBatches} />
+		<ArticleHeatmap posts={allPostsData} />
 	</div>
 
 	{#if currentView === "month"}
