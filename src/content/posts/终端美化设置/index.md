@@ -5,6 +5,7 @@ tags:
   - vscode
   - Linux
 category: 美化设置
+image: ./cover.gif
 ---
 # 引入
 常规的vscode连接Linux的虚拟机或者连接wsl的终端只有一种颜色，指令操作的时候往往没有什么辨识度，费眼睛，所以需要做一些设置使得终端的字体颜色更多样化，分为vscode编译器端的设置和Linux端的设置
