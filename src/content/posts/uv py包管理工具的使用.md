@@ -2,8 +2,8 @@
 title: uv-py包管理工具的使用
 published: 2026-09-16
 tags:
-  - python
   - 包管理
+  - Python
 category: 开发笔记
 ---
 # [官网地址](https://docs.astral.sh/uv/)

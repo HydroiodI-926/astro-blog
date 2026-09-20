@@ -340,7 +340,11 @@ onMount(() => {
 			</div>
 		</div>
 
-		<ArticleHeatmap posts={allPostsData} />
+		<ArticleHeatmap
+			posts={allPostsData}
+			year={currentYear}
+			month={currentMonth}
+		/>
 	</div>
 
 	{#if currentView === "month"}

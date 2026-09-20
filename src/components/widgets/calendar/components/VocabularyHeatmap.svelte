@@ -3,6 +3,8 @@ import type { CalendarPost } from "../types/calendar";
 
 interface Props {
 	posts: CalendarPost[];
+	year: number;
+	month: number;
 }
 
 interface HeatmapCell {
@@ -14,7 +16,7 @@ interface HeatmapCell {
 	isFuture: boolean;
 }
 
-const { posts }: Props = $props();
+const { posts, year, month }: Props = $props();
 
 function addUtcDays(date: Date, days: number) {
 	const result = new Date(date);
@@ -66,9 +68,8 @@ const activityStatsByDate = $derived.by(() => {
 
 const heatmapCells = $derived.by(() => {
 	const todayKey = getShanghaiDateKey();
-	const [year, month] = todayKey.split("-").map(Number);
-	const firstDay = new Date(Date.UTC(year, month - 1, 1));
-	const daysInMonth = new Date(Date.UTC(year, month, 0)).getUTCDate();
+	const firstDay = new Date(Date.UTC(year, month, 1));
+	const daysInMonth = new Date(Date.UTC(year, month + 1, 0)).getUTCDate();
 	const leadingEmptyCount = (firstDay.getUTCDay() + 6) % 7;
 	const result: Array<HeatmapCell | null> = Array.from(
 		{ length: leadingEmptyCount },
@@ -98,9 +99,7 @@ const heatmapCells = $derived.by(() => {
 });
 
 const monthLabel = $derived.by(() => {
-	const todayKey = getShanghaiDateKey();
-	const [year, month] = todayKey.split("-");
-	return `${year}年${Number(month)}月`;
+	return `${year}年${month + 1}月`;
 });
 
 const monthTotals = $derived.by(() => {
