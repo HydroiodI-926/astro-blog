@@ -13,12 +13,26 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "posts/机器学习工具库入门.md",
+                "file": "posts/面向对象编程大观.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "机器学习工具库入门"
+              "title": "面向对象编程大观"
+            }
+          },
+          {
+            "id": "80070fadcc2eaa48",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "posts/字符串 字典树Trie.md",
+                "mode": "source",
+                "source": false
+              },
+              "icon": "lucide-file",
+              "title": "字符串 字典树Trie"
             }
           },
           {
@@ -49,7 +63,8 @@
               "title": "uv py包管理工具的使用"
             }
           }
-        ]
+        ],
+        "currentTab": 1
       }
     ],
     "direction": "vertical"
@@ -213,16 +228,24 @@
       "bases:新建数据库": false
     }
   },
-  "active": "c93f2214533ddc65",
+  "active": "80070fadcc2eaa48",
   "lastOpenFiles": [
-    "posts/基础 前缀和与差分数组.md",
-    "posts/机器学习工具库入门.md",
-    "posts/面向对象编程大观.md",
-    "posts/字符串 Manacher.md",
+    "posts/终端美化设置/index.md",
+    "posts/字符串 字典树Trie.md",
+    "posts/终端美化设置/cover.gif",
+    "Pasted image 20260925193554.png",
+    "posts/数据结构 并查集.md",
+    "posts/数据结构 单调栈.md",
+    "posts/数据结构 树状数组.md",
     "posts/数据结构 滑动窗口 单调队列.md",
+    "posts/图论 拓扑排序.md",
+    "posts/面向对象编程大观.md",
+    "posts/C++ lambda表达式 匿名函数.md",
+    "posts/机器学习工具库入门.md",
+    "posts/基础 前缀和与差分数组.md",
+    "posts/字符串 Manacher.md",
     "posts/uv py包管理工具的使用.md",
     "2026-09-18.md",
-    "posts/数据结构 并查集.md",
     "posts/ssh服务器搭建指南byHydroiody/正文.md",
     "posts/动态规划 线性dp.md",
     "posts/ssh服务器搭建指南byHydroiody/Pasted image 20260110191816.png",
@@ -230,16 +253,10 @@
     "posts/ssh服务器搭建指南byHydroiody/3f30619d49f4370013fac326fd8f5b3e.png",
     "posts/ssh服务器搭建指南byHydroiody/169d8ef5ac6c033d92d7fa6573c73f1f.png",
     "posts/ssh服务器搭建指南byHydroiody",
-    "posts/图论 拓扑排序.md",
-    "posts/数据结构 单调栈.md",
     "posts/Linux bash脚本练习.md",
-    "posts/数据结构 树状数组.md",
     "posts/动态规划 区间dp.md",
-    "posts/终端美化设置/index.md",
-    "posts/终端美化设置/cover.gif",
     "posts/guide/index.md",
     "posts/动态规划 背包dp.md",
-    "posts/C++ lambda表达式 匿名函数.md",
     "posts/guide/cover.webp",
     "posts/终端美化设置",
     "2026-08-02.md",
